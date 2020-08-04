@@ -100,10 +100,13 @@ function loadCredentials() {
     emailCredentialsFileStream.on('data', data => {
         let emailCredentialsLines = data.split(/\n/);
         let emailCredentialsMap = new Map();
+        let valueCleared = ""; //Remove line break or other text formats from OS
         for (let line in emailCredentialsLines) {
             let codeCrendentialsValue = emailCredentialsLines[line].split("==");
             if (codeCrendentialsValue.length === 2) {
-                emailCredentialsMap.set(codeCrendentialsValue[0], codeCrendentialsValue[1]);
+                valueCleared = codeCrendentialsValue[1].replace('\r','');
+                valueCleared = valueCleared.replace('\n','');
+                emailCredentialsMap.set(codeCrendentialsValue[0], valueCleared);
             }
         }
         if (emailCredentialsMap.size === 5) {
@@ -117,6 +120,10 @@ function loadCredentials() {
             emailUser = emailCredentialsMap.get("emailUser");
             emailPassword = emailCredentialsMap.get("emailPassword");
         }
+        console.log(emailHost);
+        console.log(emailUser);
+        console.log(emailPassword);
+
     });
 
 

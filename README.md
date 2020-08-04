@@ -87,3 +87,4 @@ Copy the content of the folder "public" to your server.
 ![Screenshot 2 of Web Application Project Status](https://raw.githubusercontent.com/a-dridi/Project-Status/master/screenshot2.PNG)
 ![Screenshot 3 of Web Application Project Status](https://raw.githubusercontent.com/a-dridi/Project-Status/master/screenshot3.PNG)
 ![Screenshot 3 of Web Application Project Status](https://raw.githubusercontent.com/a-dridi/Project-Status/master/screenshot4.PNG)
+![Screenshot 3 of Web Application Project Status](https://raw.githubusercontent.com/a-dridi/Project-Status/master/screenshot5.PNG)
