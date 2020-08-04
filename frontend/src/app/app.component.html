@@ -1,0 +1,47 @@
+<div id="app-skeleton" layout-fill>
+  <mat-toolbar id="app-header">
+    <div style="flex-grow: 5;">
+      <div class="appLogo">
+        <div id="iconAppLogo">
+          <img src="/assets/images/logo.png" height="40px" />
+        </div>
+        <div id="titleAppLogo"> <a href="/" style="text-decoration: none; padding-top: 15px; color: black"><span
+              i18n>Project
+              Status</span></a>
+        </div>
+      </div>
+    </div>
+    <br>
+  </mat-toolbar>
+  <div id="app-content">
+    <router-outlet></router-outlet>
+  </div>
+  <mat-toolbar id="app-footer">
+    <mat-toolbar-row>
+      <span>Made with </span>
+      <mat-icon class="example-icon" aria-hidden="false" aria-label="heart icon"
+        style="margin-left: 5px; height:14px;font-size: 14px;">favorite</mat-icon>
+      <span>by a.dridi (github.com/a-dridi)</span>
+    </mat-toolbar-row>
+    <mat-toolbar-row>
+      <div class="footer-links">
+        <div class="footer-link-element">
+          <a href="/general-notice" i18n>General Notice</a>
+        </div>
+        <div class="footer-link-element">
+          <a href="/privacy-policy" i18n>Privacy Policy</a>
+        </div>
+        <div class="footer-link-element">
+          <a href="/contact" i18n>Contact</a>
+        </div>
+        <div class="footer-link-element" *ngIf="!adminLoggedIn">
+          <a href="/admin" i18n>Admin</a> </div>
+        <div class="footer-link-element" *ngIf="adminLoggedIn">
+          <a href="/admin" i18n>Admin Dashboard</a> </div>
+        <div class="footer-link-element" *ngIf="adminLoggedIn">
+          <a href="/admin-logout" i18n>Logout</a> </div>
+
+      </div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+</div>

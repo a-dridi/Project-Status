@@ -1,0 +1,98 @@
+body {
+    font-size: 20px;
+    margin: 30px 30px;
+}
+
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+.stage {
+    position: relative;
+    min-height: 1.5em;
+    color: black;
+}
+
+.stage+.stage {
+    margin-top: 1.5em;
+}
+
+.stage>div:first-child {
+    position: static;
+    height: 0;
+}
+
+.stage>div:not(:first-child) {
+    margin-left: 1.5em;
+    padding-left: 1em;
+}
+
+.stage.stage-active {
+    color: green;
+}
+
+.stage.stage-active .circle {
+    background-color: green;
+}
+
+.circle {
+    background: #919191;
+    position: relative;
+    width: 2em;
+    height: 2em;
+    padding-top: 3px;
+    padding-left: 7px;
+    line-height: 1.6em;
+    border-radius: 100%;
+    color: white;
+    box-shadow: 0 0 0 3px white;
+    z-index: 10;
+}
+
+.circle:after {
+    content: ' ';
+    position: absolute;
+    display: block;
+    top: 2px;
+    right: 50%;
+    bottom: 1px;
+    left: 50%;
+    height: 100%;
+    width: 1px;
+    transform: scale(1, 2);
+    transform-origin: 50% -100%;
+    background-color: rgba(0, 0, 0, 0.35);
+    z-index: 3;
+}
+
+.stage:last-child .circle:after {
+    display: none;
+}
+
+.circle-number-text {
+    font-weight: bold;
+    font-size: 19px;
+    margin-left: 1px;
+}
+
+.circle.circle-finished {
+    background: green;
+    font-weight: bold;
+}
+
+.title {
+    line-height: 1.5em;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 0.8em;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+#projectStatusView{
+    margin-bottom: 15px;
+}

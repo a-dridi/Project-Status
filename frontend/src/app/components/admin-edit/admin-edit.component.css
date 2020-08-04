@@ -1,0 +1,18 @@
+.button-text {
+    margin-left: 10px;
+}
+
+.button-submit-project {
+    margin-right: 10px;
+    background-color: green;
+    color: white;
+}
+
+.edit-form {
+    min-width: 150px;
+    width: 100%;
+}
+
+.field-full-width {
+    width: 100%;
+}

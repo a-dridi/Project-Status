@@ -1,0 +1,63 @@
+<div>
+    <div class="col-md-6 m-auto">
+        <br>
+        <br>
+        <div class="card card-body">
+            <h1 class="text-center mb-3" i18n>
+                Register Admin Account </h1>
+            <h3 i18n>You can register only one admin account, that can be used to view your agent/admin dashboard.</h3>
+            <br>
+            <div *ngIf="adminAccountCreated">
+                <h2 style="color: red" i18n>Admin account is already registered. Please use your admin account
+                    credentials to login. </h2>
+            </div>
+            <form [formGroup]="registrationForm" class="register-form" *ngIf="!adminAccountCreated">
+                <div class="form-group">
+                    <label for="name" i18n>Name</label>
+                    <br>
+                    <input type="name" id="name" matInput placeholder="{{namePlaceholder}}" formControlName="name"
+                        #name>
+                </div>
+                <div class="form-group">
+                    <label for="email" i18n>Email</label>
+                    <br>
+                    <input type="email" id="email" matInput placeholder="{{emailPlaceholder}}" formControlName="email"
+                        #email>
+                </div>
+                <div class="form-group">
+                    <label for="password" i18n>Password </label>
+                    <br>
+                    <input type="password" id="password" matInput placeholder="{{passwordPlaceholder}}"
+                        formControlName="password" #password>
+                </div>
+                <div class="form-group">
+                    <label for="password2" i18n>Password Confirmation: </label>
+                    <br>
+                    <input type="password" id="password2" matInput placeholder="{{passwordconfirmationPlaceholder}}"
+                        formControlName="password2" #password2>
+                </div>
+                <div class="form-group">
+                    <label for="telephone" i18n>Telephone (optional): </label>
+                    <br>
+                    <input type="telephone" id="telephone" matInput placeholder="{{telephonePlaceholder}}"
+                        formControlName="telephone" #telephone>
+                </div>
+                <div class="form-group">
+                    <label for="note" i18n>Note - visible by client/customer (optional) </label>
+                    <br>
+                    <input type="note" id="note" matInput placeholder="{{notePlaceholder}}" formControlName="note"
+                        #note>
+                </div>
+
+                <button type="submit"
+                    (click)="registeradmin(name.value, email.value, password.value, password2.value, telephone.value, note.value)"
+                    mat-raised-button color="primary" class="button-submit-login"><span i18n>Register</span></button>
+
+            </form>
+            <p class="lead mt-4"><span i18n>You already have an admin account? </span> <a href="/admin-login" i18n>Login
+                    with your admin account</a></p>
+        </div>
+        <br>
+        <br>
+    </div>
+</div>

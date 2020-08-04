@@ -1,0 +1,26 @@
+.create-form {
+    min-width: 150px;
+    width: 100%;
+}
+
+.field-full-width {
+    width: 100%;
+}
+
+.button-submit-project {
+    margin-right: 10px;
+    background-color: green;
+    color: white;
+}
+
+.container-main {
+    display: inherit;
+}
+
+.projectstage-sliderinput {
+    border-bottom: grey 2px;
+}
+
+.button-text {
+    margin-left: 10px;
+}

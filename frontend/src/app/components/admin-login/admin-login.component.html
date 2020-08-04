@@ -1,0 +1,33 @@
+<div class="mt-5">
+    <div class="col-md-6 m-auto">
+        <div class="card card-body">
+            <h1 class="text-center mb-3"><i class="fas fa-sign-in-alt fa-icon"></i> <span i18n>Admin Login</span></h1>
+
+            <form [formGroup]="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email" i18n>E-Mail: </label>
+                    <br>
+                    <input type="email" id="email" matInput placeholder="{{emailPlaceholder}}" formControlName="email"
+                        #email>
+                </div>
+                <div class="form-group">
+                    <label for="password" i18n>Password: </label>
+                    <br>
+                    <input type="password" id="password" matInput placeholder="{{passwordPlaceholder}}"
+                        formControlName="password" #password>
+                </div>
+                <button type="submit" (click)="loginAdmin(email.value, password.value)" mat-raised-button
+                    color="primary" class="button-submit-login"><span i18n>Login</span></button>
+
+            </form>
+            <br>
+            <br>
+            <p class="lead mt-4" *ngIf="!adminAccountCreated">
+                <span i18n> You did not create an admin account? </span> <a href="/admin-registration" i18n>Create admin
+                    account</a>
+            </p>
+        </div>
+    </div>
+</div>
+<br>
+<br>

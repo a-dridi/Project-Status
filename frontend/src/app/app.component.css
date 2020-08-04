@@ -1,0 +1,66 @@
+.appLogo {
+    display: flex;
+    padding-top: 10px;
+    justify-content: center;
+    margin: auto;
+    width: 150px;
+}
+
+#iconAppLogo {
+    margin: auto;
+}
+
+#titleAppLogo {
+    color: white;
+    margin: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#app-header {
+    background: rgb(215, 255, 235);
+    background: linear-gradient(90deg, rgba(215, 255, 235, 1) 0%, rgba(161, 224, 192, 1) 100%);
+    height: fit-content;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+#adminsectionLink {
+    font-size: 12px;
+    color: white;
+    text-align: right;
+    justify-content: right;
+}
+
+#headerToolbar {
+    flex-wrap: wrap;
+}
+
+.footer-links {
+    color: blue;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: blue;
+}
+
+.footer-link-element {
+    padding-right: 20px;
+}
+
+#app-skeleton {
+    position: relative;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+
+#app-footer {
+    font-size: 10px;
+    background: rgb(215, 255, 235);
+    background: linear-gradient(90deg, rgba(215, 255, 235, 1) 0%, rgba(161, 224, 192, 1) 100%);
+}

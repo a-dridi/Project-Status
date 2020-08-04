@@ -1,0 +1,27 @@
+.usernameGreeting {
+    text-align: center;
+    margin-top: 10px;
+}
+.admin-create-button{
+    margin-left: 15px;
+}
+
+table {
+    width: 100%;
+}
+
+.mat-column-right {
+    text-align: center;
+}
+
+.container-dashboard-main {
+    display: inherit;
+}
+
+.main-column {
+    font-weight: bold;
+}
+
+.mat-header-row.cdk-header-row {
+    background-color: #f5f5f5;
+}

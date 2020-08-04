@@ -1,0 +1,80 @@
+<div>
+    <br>
+    <mat-card class="container-main">
+        <section class="mat-typograhy">
+            <h3 i18n>New Project</h3>
+        </section>
+        <br>
+        <form [formGroup]="createForm" class="create-form">
+            <div fxLayout="row" class="field-full-width">
+                <mat-form-field>
+                    <mat-label><span i18n>Start Date</span></mat-label>
+                    <input matInput [matDatepicker]="startdatePicker" placeholder="{{startdatePlaceholder}}"
+                        formControlName="startdate" #startdate>
+                    <mat-datepicker-toggle matSuffix [for]="startdatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker touchUi #startdatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <mat-form-field class="field-full-width">
+                <input matInput placeholder="{{titlePlaceholder}}" formControlName="title" #title>
+            </mat-form-field>
+            <mat-form-field class="field-full-width">
+                <input matInput placeholder="{{descriptionPlaceholder}}" formControlName="description" #description>
+            </mat-form-field>
+            <mat-form-field class="field-full-width">
+                <input matInput placeholder="{{emailPlaceholder}}" formControlName="email" #email>
+            </mat-form-field>
+            <div fxLayout="row" class="field-full-width">
+                <mat-form-field>
+                    <mat-label><span i18n>End Date</span></mat-label>
+                    <input matInput [matDatepicker]="enddatePicker" placeholder="{{enddatePlaceholder}}"
+                        formControlName="enddate" #enddate>
+                    <mat-datepicker-toggle matSuffix [for]="enddatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker touchUi #enddatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <mat-accordion>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <span i18n>Project Stages</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <form [formGroup]="projectStagesForm">
+                        <div formArrayName="projectStagesInput"
+                            *ngFor="let projectStageItem of projectStagesForm.get('projectStagesInput')['controls']; let i = index">
+                            <div formGroupName="{{i}}">
+                                <mat-form-field class="field-full-width">
+                                    <input matInput id="{{'stageNumber'+i}}" formControlName="{{'stageNumber'+i}}"
+                                        placeholder="{{i+1}}" class="projectstage-sliderinput">
+                                </mat-form-field>
+                                <mat-form-field class="field-full-width">
+                                    <input matInput id="{{'stageTitle'+i}}" formControlName="{{'stageTitle'+i}}"
+                                        placeholder="{{stageTitlePlaceholder}}" class="projectstage-sliderinput">
+                                </mat-form-field>
+                                <mat-form-field class="field-full-width">
+                                    <input matInput id="{{'stageDescription'+i}}"
+                                        formControlName="{{'stageDescription'+i}}"
+                                        placeholder="{{stageDescriptionPlaceholder}}" class="projectstage-sliderinput">
+                                </mat-form-field>
+                            </div>
+                            <hr>
+                        </div>
+                        <button mat-mini-fab color="primary" type="button" (click)="addNewProjectStageInput()"><i
+                                class="fas fa-plus"></i></button>
+                    </form>
+                </mat-expansion-panel>
+            </mat-accordion>
+            <br>
+            <br>
+            <button id="submitButton" type="submit"
+                (click)="addProject(title.value, description.value, startdate.value, enddate.value, email.value)"
+                [disabled]="createForm.pristine || createForm.invalid" mat-raised-button color="primary"
+                class="button-submit-project"><i class="fas fa-check"></i> <span i18n
+                    class="button-text">OK</span></button>
+            <button id="backButton" mat-raised-button color="accent" routerLink="/admin">
+                <i class="fas fa-arrow-circle-left"></i> <span i18n class="button-text">Back</span>
+            </button>
+        </form>
+    </mat-card>
+</div>
