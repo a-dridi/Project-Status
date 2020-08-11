@@ -30,24 +30,26 @@ export class ProjectstatusService {
     return this.httpClient.get(`${this.API_URL}/project/customer/${id}/${email}`);
   }
 
-  addProject(createdDate, title, description, clientEmail, endDate) {
+  addProject(createdDate, title, description, clientEmail, clientTelephone, endDate) {
     const newProject = {
       title: title,
       created_date: createdDate,
       description: description,
       client_email: clientEmail,
+      client_telephone: clientTelephone,
       end_date: endDate,
       finished: false
     };
     return this.httpClient.post(`${this.API_URL}/project/add`, newProject);
   }
 
-  updateProject(id, createdDate, title, description, clientEmail, endDate, projectFinished) {
+  updateProject(id, createdDate, title, description, clientEmail, clientTelephone, endDate, projectFinished) {
     const updatedProject = {
       title: title,
       created_date: createdDate,
       description: description,
       client_email: clientEmail,
+      client_telephone: clientTelephone,
       end_date: endDate,
       finished: projectFinished
     };
@@ -121,6 +123,16 @@ export class ProjectstatusService {
     })
   }
 
+  async checkAdminAuthenticationSync() {
+    //return this.http.get(`${this.uri}/admin`);
+   return await this.httpClient.get(`${this.API_URL}/admin`, {
+      observe: 'body',
+      withCredentials: true,
+      headers: new HttpHeaders().append('Content-Type', 'application/json')
+    }).toPromise();
+   
+  }
+
   doAdminLogin(body: any) {
     return this.httpClient.post(`${this.API_URL}/admin-login`, body, {
       observe: 'body',
@@ -158,6 +170,14 @@ export class ProjectstatusService {
       adminaccount_email: adminaccountEmail
     };
     return this.httpClient.post(`${this.API_URL}/email/client/notification`, email);
+  }
+
+  sendSMSNotificationClient(clientNumber, smsText) {
+    const sms = {
+      client_number: clientNumber,
+      sms_text: smsText
+    };
+    return this.httpClient.post(`${this.API_URL}/sms/client/notification`, sms);
   }
 
   getAuthenticatedAdminAccount() {

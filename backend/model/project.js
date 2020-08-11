@@ -16,6 +16,9 @@ let Project = new Schema({
     client_email: {
         type: String
     },
+    client_telephone: {
+        type: String
+    },
     end_date: {
         type: Date
     },

@@ -25,3 +25,7 @@ table {
 .mat-header-row.cdk-header-row {
     background-color: #f5f5f5;
 }
+
+th{
+    color: black;
+}

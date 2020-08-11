@@ -35,10 +35,7 @@ export class AdminLoginComponent implements OnInit {
       email: ['', Validators.required],
       password: ['', Validators.required]
     });
-
-
   }
-
 
   loginAdmin(email, password) {
     if (!this.loginForm.valid) {
@@ -54,13 +51,15 @@ export class AdminLoginComponent implements OnInit {
           this.adminDataSharingService.adminLoggedIn.next(true);
           this.router.navigate(['/admin']);
           this.router.navigated = false;
+
         },
 
         error => {
           console.log("Login failed!");
           this.snackbar.open($localize`LOGIN FAILED. Please enter your correct email address and password of your admin account.`, "OK", {
-          duration: 10000 
-        }); }
+            duration: 10000
+          });
+        }
       );
   }
 

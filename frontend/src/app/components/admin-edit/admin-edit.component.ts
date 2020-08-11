@@ -7,6 +7,7 @@ import { Project } from 'src/app/project.model';
 import { ProjectStage } from 'src/app/projectstage.model';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { EmailtTextTemplateTexts } from 'src/app/emailTextTemplateTexts';
+import { SmsTextTemplateTexts } from 'src/app/smsTextTemplateTexts';
 
 @Component({
   selector: 'app-admin-edit',
@@ -14,13 +15,14 @@ import { EmailtTextTemplateTexts } from 'src/app/emailTextTemplateTexts';
   styleUrls: ['./admin-edit.component.css']
 })
 export class AdminEditComponent implements OnInit {
-  startdatePlaceholder: String;
-  titlePlaceholder: String;
-  descriptionPlaceholder: String;
-  emailPlaceholder: String;
-  enddatePlaceholder: String;
-  stageTitlePlaceholder: String;
-  stageDescriptionPlaceholder: String;
+  startdatePlaceholder: string;
+  titlePlaceholder: string;
+  descriptionPlaceholder: string;
+  emailPlaceholder: string;
+  telephonePlaceholder: string;
+  enddatePlaceholder: string;
+  stageTitlePlaceholder: string;
+  stageDescriptionPlaceholder: string;
   selectedProject: Project;
   selectedProjectStages: ProjectStage[];
   editForm: FormGroup;
@@ -31,19 +33,21 @@ export class AdminEditComponent implements OnInit {
   projectFinished: boolean = false;
   amountOfFinishedProjectStages: number = 0;
   projectStagesLastIndex: number = 0;
-  updatedStartdate: String;
-  updatedTitle: String;
-  updatedDescription: String;
-  updatedEmail: String;
-  updatedEnddate: String;
+  updatedStartdate: string;
+  updatedTitle: string;
+  updatedDescription: string;
+  updatedEmail: string;
+  updatedTelephone: string;
+  updatedEnddate: string;
   notificationSent: boolean = false;
-  enddateEmailString: String = "";
+  enddateEmailString: string = "";
 
   constructor(private projectstatusService: ProjectstatusService, private projectForm: FormBuilder, private router: Router, private route: ActivatedRoute, private snackBar: MatSnackBar) {
     this.startdatePlaceholder = $localize`Start Date`;
     this.titlePlaceholder = $localize`Project Title`;
     this.descriptionPlaceholder = $localize`Project Description`;
     this.emailPlaceholder = $localize`Customer/Client Email`;
+    this.telephonePlaceholder = $localize`Customer/Client Telephone`;
     this.startdatePlaceholder = $localize`End Date`;
     this.stageTitlePlaceholder = $localize`Project Stage Title`;
     this.stageDescriptionPlaceholder = $localize`Project Stage Description`;
@@ -53,6 +57,7 @@ export class AdminEditComponent implements OnInit {
       title: ['', Validators.required],
       description: [''],
       email: ['', Validators.required],
+      telephone: [''],
       enddate: ['']
     });
 
@@ -96,6 +101,7 @@ export class AdminEditComponent implements OnInit {
     this.editForm.get("title").setValue(selectedProject.title);
     this.editForm.get("description").setValue(selectedProject.description);
     this.editForm.get("email").setValue(selectedProject.client_email);
+    this.editForm.get("telephone").setValue(selectedProject.client_telephone);
     this.editForm.get("enddate").setValue(selectedProject.end_date);
   }
 
@@ -136,7 +142,7 @@ export class AdminEditComponent implements OnInit {
   /**
    * Updates Project and Project Stages
    */
-  editProject(startdate, title, description, email, enddate) {
+  editProject(startdate, title, description, email, telephone, enddate) {
     //Parse date into ISO-8601 format
     let parsedStartDate = new Date();
     let parsedEndDate = new Date();
@@ -155,57 +161,65 @@ export class AdminEditComponent implements OnInit {
     this.updatedTitle = title;
     this.updatedDescription = description;
     this.updatedEmail = email;
+    this.updatedTelephone = telephone;
     this.enddateEmailString = enddate;
-    this.saveProjectStages(this.selectedProject._id);
+    this.saveProjectStages();
   }
 
   /**
-   * Update project stages and add new project stages. Update project
-   * @param projectId 
+   * Update project stages and add new project stages. Part of editProject
    */
-  saveProjectStages(projectId) {
+  saveProjectStages() {
     let projectStagesFormArray = (this.projectStagesForm.controls['projectStagesInput'] as FormArray);
     let i = 0;
-    this.projectStagesLastIndex = projectStagesFormArray.controls.length;
+    this.projectStagesLastIndex = projectStagesFormArray.controls.length-1;
 
     //let projectStagesLastIndex = this.selectedProjectStages.length-1;
-    for (const projectStagesFormElement of projectStagesFormArray.controls) {
-      const stageNumberOfElement = Number.parseInt(projectStagesFormElement.get(['stageNumber' + i]).value);
-      const stageTitleOfElement = projectStagesFormElement.get(['stageTitle' + i]).value;
-      const stageDescriptionOfElement = projectStagesFormElement.get(['stageDescription' + i]).value;
-      const stageFinishedOfElement = projectStagesFormElement.get(['finished' + i]).value;
+    projectStagesFormArray.controls.forEach((projectStagesFormElement, index) => {
+      this.updateProjectStage(projectStagesFormElement, index);
+    });
+  }
 
-      if (stageFinishedOfElement === true) {
-        this.amountOfFinishedProjectStages += 1;
-      }
+  /**
+   * Updates a project stage. If it is the last project stage, then the project will be updated and a project notification will be sent.
+   * @param projectStagesFormElement 
+   * @param index the current index of the Array "projectStagesFormElement"
+   */
+  updateProjectStage(projectStagesFormElement, index) {
+    const stageNumberOfElement = Number.parseInt(projectStagesFormElement.get(['stageNumber' + index]).value);
+    const stageTitleOfElement = projectStagesFormElement.get(['stageTitle' + index]).value;
+    const stageDescriptionOfElement = projectStagesFormElement.get(['stageDescription' + index]).value;
+    const stageFinishedOfElement = projectStagesFormElement.get(['finished' + index]).value;
 
-      //Update existing project stages only
-      if (this.newProjectStagesStartIndex === 0) {
-        this.projectstatusService.updateProjectStageById(this.selectedProjectStages[i]._id, stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, projectId).subscribe(() => {
-          if (i === this.projectStagesLastIndex) {
-            this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedEnddate, this.enddateEmailString);
-            this.router.navigate(['/admin']);
-          }
-        });
-      } else {
-        //Updating existing project stages is done - New project stages will be added
-        if (i >= this.newProjectStagesStartIndex) {
-          this.projectstatusService.addProjectStage(stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, projectId).subscribe(() => {
-          });
-        } else {
-          //Update existing project stages
-          this.projectstatusService.updateProjectStageById(this.selectedProjectStages[i]._id, stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, projectId).subscribe(() => {
-            this.snackBar.open($localize`OK. Project was updated.`, "OK", {
-              duration: 4000
-            });
-          });
-        }
-        if (i === this.projectStagesLastIndex - 1) {
-          this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedEnddate, this.enddateEmailString);
+    if (stageFinishedOfElement === true) {
+      this.amountOfFinishedProjectStages += 1;
+    }
+
+    //Update existing project stages only
+    if (this.newProjectStagesStartIndex === 0) {
+      this.projectstatusService.updateProjectStageById(this.selectedProjectStages[index]._id, stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, this.selectedProject._id).subscribe(() => {
+        if (index === this.projectStagesLastIndex) {
+          this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedTelephone, this.updatedEnddate, this.enddateEmailString);
           this.router.navigate(['/admin']);
         }
+      });
+    } else {
+      //Updating existing project stages is done - New project stages will be added
+      if (index >= this.newProjectStagesStartIndex) {
+        this.projectstatusService.addProjectStage(stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, this.selectedProject._id).subscribe(() => {
+        });
+      } else {
+        //Update existing project stages
+        this.projectstatusService.updateProjectStageById(this.selectedProjectStages[index]._id, stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, this.selectedProject._id).subscribe(() => {
+          this.snackBar.open($localize`OK. Project was updated.`, "OK", {
+            duration: 4000
+          });
+        });
       }
-      i += 1;
+      if (index === this.projectStagesLastIndex) {
+        this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedTelephone, this.updatedEnddate, this.enddateEmailString);
+        this.router.navigate(['/admin']);
+      }
     }
   }
 
@@ -217,16 +231,16 @@ export class AdminEditComponent implements OnInit {
    * @param email 
    * @param enddate 
    */
-  updateProject(startdate, title, description, email, enddate, enddateEmailString) {
+  updateProject(startdate, title, description, email, telephonenumber, enddate, enddateEmailString) {
     //Send a "project completed" notification if project is finished and a "step finished" notification if a stage is finished
     if (this.amountOfFinishedProjectStages === this.projectStagesLastIndex) {
       this.projectFinished = true;
-      this.sendProjectFinishedNotification(email, title);
+      this.sendProjectFinishedNotification(email, telephonenumber, title);
     } else {
-      this.sendProjectStageFinishedNotification(this.selectedProject._id, email, title, enddateEmailString, this.amountOfFinishedProjectStages, this.projectStagesLastIndex);
+      this.sendProjectStageFinishedNotification(this.selectedProject._id, email, telephonenumber, title, enddateEmailString, this.amountOfFinishedProjectStages, this.projectStagesLastIndex);
     }
 
-    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, enddate, this.projectFinished).subscribe(() => {
+    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, telephonenumber, enddate, this.projectFinished).subscribe(() => {
       this.snackBar.open($localize`OK. Project was updated.`, "OK", {
         duration: 6000
       });
@@ -234,41 +248,54 @@ export class AdminEditComponent implements OnInit {
   }
 
   /**
-   * Send an email to the customer email address. Tells the customer that the project finished. 
+   * Send an email to the customer email address. If the client number is set, then an sms will be sent instead. Tells the customer that the project finished. 
    */
-  sendProjectFinishedNotification(clientEmail, projectTitle) {
+  sendProjectFinishedNotification(clientEmail, clientTelephoneNumber, projectTitle) {
     this.projectstatusService.getAuthenticatedAdminAccount().subscribe(adminaccount => {
       let emailSubject = EmailtTextTemplateTexts.projectFinishedSubject + projectTitle;
       let emailText = EmailtTextTemplateTexts.projectFinishedText + "<br><br>" + EmailtTextTemplateTexts.projectFinishedFooter + "<br>" + adminaccount['name'];
 
       if (!this.notificationSent) {
-        this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
-          console.log("Email notification to customer sent");
-        });
+        if (clientTelephoneNumber === "") {
+          this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
+            console.log("Email notification to customer sent");
+          });
+        } else {
+          const smsText = SmsTextTemplateTexts.projectFinishedText + "\n" + SmsTextTemplateTexts.projectFinishedFooter + "\n" + adminaccount['name'];
+          this.projectstatusService.sendSMSNotificationClient(clientTelephoneNumber, smsText).subscribe(() => {
+            console.log("SMS notification to customer sent");
+          });
+        }
       }
       this.notificationSent = true;
     });
   }
 
-  sendProjectStageFinishedNotification(projectId, clientEmail, projectTitle, enddateEmailString, stageNumber, allStageNumber) {
+  sendProjectStageFinishedNotification(projectId, clientEmail, clientTelephoneNumber, projectTitle, enddateEmailString, stageNumber, allStageNumber) {
     this.projectstatusService.getAuthenticatedAdminAccount().subscribe(adminaccount => {
       let emailSubject = $localize`Project Step ` + stageNumber + `/` + allStageNumber + $localize` finished - ` + projectTitle;
       let emailText;
       let projectStatusLink = EmailtTextTemplateTexts.appWebsiteURL + clientEmail + "/" + projectId;
 
       if (enddateEmailString !== "") {
-        emailText = $localize`This project step was completed: ` + this.selectedProjectStages[stageNumber-1].title + "<br><br>" + $localize`You can check the project status at this site: ` + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextProjectEnd + "<br>" + enddateEmailString + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
+        emailText = $localize`This project step was completed: ` + this.selectedProjectStages[stageNumber - 1].title + "<br><br>" + $localize`You can check the project status at this site: ` + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextProjectEnd + "<br>" + enddateEmailString + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
       } else {
         emailText = $localize`A project step was completed. You can check the project status at this site: ` + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
       }
 
       if (!this.notificationSent) {
-        this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
-          console.log("Email notification to customer sent");
-        });
+        if (clientTelephoneNumber === "") {
+          this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
+            console.log("Email notification to customer sent");
+          });
+        } else {
+          const smsText = emailSubject + $localize`This project step was completed: ` + this.selectedProjectStages[stageNumber - 1].title + "\n" + $localize`You can check the project status at this site: ` + "\n" + projectStatusLink + "\n" + EmailtTextTemplateTexts.projectStartedTextProjectEnd + "\n" + enddateEmailString + "\n" + EmailtTextTemplateTexts.projectStartedTextFooter + "\n" + adminaccount['name'];
+          this.projectstatusService.sendSMSNotificationClient(clientTelephoneNumber, smsText).subscribe(() => {
+            console.log("SMS notification to customer sent");
+          });
+        }
       }
       this.notificationSent = true;
     });
-
   }
 }

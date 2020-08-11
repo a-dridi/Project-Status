@@ -17,28 +17,45 @@ import Project from "./model/Project";
 import ProjectStage from "./model/ProjectStage";
 
 const DATABASE_CONNECTION = "mongodb://127.0.0.1/projectstatus";
-//Email settings - Check the file credentials/emailCredentials.txt.template
+//Email settings - Check the file credentials/emailCredentials.txt
 let emailHost = "";
 let emailPort = 465;
 let emailSecure = true; //use port 465 if emailSecure is true
 let emailUser = "";
 let emailPassword = "";
 
-loadCredentials();
 
+//SMS settings - Check the file credentials/smsCredentials.txt
 const Nexmo = require('nexmo');
-//SMS settings - Adjust these settings 
+
+let smsAPIKey = "";
+let smsAPISecret = "";
+let smsApplicationId = "";
+let smsPrivateKeyPath = "";
+let smsSignatureSecret = "";
+let smsSignatureMethod = "";
+let smsNexmoVirtualNumber = "";
+
 /*
 const nexmo = new Nexmo({
-apiKey: 'API_KEY',
-apiSecret: 'API_SECRET',
-applicationId: 'APP_ID',
-privateKey: 'PRIVATE_KEY_PATH',
-signatureSecret: 'SIGNATURE_SECRET',
-signatureMethod: 'SIGNATURE_METHOD'
+    apiKey: smsAPIKey,
+    apiSecret: smsAPISecret,
+    applicationId: smsApplicationId,
+    privateKey: smsPrivateKeyPath,
+    signatureSecret: smsSignatureSecret,
+    signatureMethod: smsSignatureMethod
 });
-const nexmoVirtualNumber = 'YOUR_VIRTUAL_NUMBER';
 */
+const nexmo = new Nexmo({
+    apiKey: smsAPIKey,
+    apiSecret: smsAPISecret
+});
+
+
+loadCredentials();
+
+const nexmoVirtualNumber = smsNexmoVirtualNumber;
+
 
 //app.use(cors());
 //DOMAIN NAME (+ Port number if used) OF THE WEBSITE/WEB SERVER WHERE THIS APPLICATION IS RUNNING - Ex.: https://mydomain.tld
@@ -104,8 +121,8 @@ function loadCredentials() {
         for (let line in emailCredentialsLines) {
             let codeCrendentialsValue = emailCredentialsLines[line].split("==");
             if (codeCrendentialsValue.length === 2) {
-                valueCleared = codeCrendentialsValue[1].replace('\r','');
-                valueCleared = valueCleared.replace('\n','');
+                valueCleared = codeCrendentialsValue[1].replace('\r', '');
+                valueCleared = valueCleared.replace('\n', '');
                 emailCredentialsMap.set(codeCrendentialsValue[0], valueCleared);
             }
         }
@@ -120,13 +137,31 @@ function loadCredentials() {
             emailUser = emailCredentialsMap.get("emailUser");
             emailPassword = emailCredentialsMap.get("emailPassword");
         }
-        console.log(emailHost);
-        console.log(emailUser);
-        console.log(emailPassword);
-
     });
 
-
+    const smsCredentialsFileStream = fs.createReadStream(smsCredentialsFilePath, { encoding: "utf-8" });
+    smsCredentialsFileStream.on('data', data => {
+        let smsCredentialsLines = data.split(/\n/);
+        let smsCredentialsMap = new Map();
+        let valueCleared = ""; //Remove line break or other text formats from OS
+        for (let line in smsCredentialsLines) {
+            let codeCrendentialsValue = smsCredentialsLines[line].split("==");
+            if (codeCrendentialsValue.length === 2) {
+                valueCleared = codeCrendentialsValue[1].replace('\r', '');
+                valueCleared = valueCleared.replace('\n', '');
+                smsCredentialsMap.set(codeCrendentialsValue[0], valueCleared);
+            }
+        }
+        if (smsCredentialsMap.size === 3) {
+            smsAPIKey = smsCredentialsMap.get("smsAPIKey");
+            smsAPISecret = smsCredentialsMap.get("smsAPISecret");
+            smsApplicationId = smsCredentialsMap.get("smsApplicationId");
+            smsPrivateKeyPath = smsCredentialsMap.get("smsPrivateKeyPath");
+            smsSignatureSecret = smsCredentialsMap.get("smsSignatureSecret");
+            smsSignatureMethod = smsCredentialsMap.get("smsSignatureMethod");
+            smsNexmoVirtualNumber = smsCredentialsMap.get("smsNexmoVirtualNumber");
+        }
+    });
 }
 
 
@@ -335,6 +370,7 @@ router.route('/project/update/:id').post((req, res) => {
             project.created_date = req.body.created_date;
             project.project_id = req.body.project_id;
             project.client_email = req.body.client_email;
+            project.client_telephone = req.body.client_telephone;
             project.finished = req.body.finished;
             project.save().then(project => {
                 res.status(200).json("Project was successfully updated.");
@@ -488,18 +524,18 @@ router.route("/email/client/notification").post((req, res) => {
 });
 
 //sendSMSNotificationClient()
-/*
 router.route("/sms/client/notification").post((req, res) => {
-   nexmo.message.sendSms(nexmoVirtualNumber, req.body.client_number, req.body.sms_text, {type: 'unicode'},
-   (err, responseData) => {
-    if(err){
-        console.log(err);
-    } else {
-        console.log(responseData);
-    }
-   });
+    console.log(smsAPIKey);
+    nexmo.message.sendSms(nexmoVirtualNumber, req.body.client_number, req.body.sms_text, { type: 'unicode' },
+        (err, responseData) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(responseData);
+            }
+        });
 });
-*/
+
 
 app.use("/api", router);
 app.listen(4000, () => console.log("Your Express server runs on the port 4000"));

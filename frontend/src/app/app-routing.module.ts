@@ -8,18 +8,19 @@ import { AdminLogoutComponent } from './components/admin-logout/admin-logout.com
 import { AdminEditComponent } from './components/admin-edit/admin-edit.component';
 import { AdminCreateComponent } from './components/admin-create/admin-create.component';
 import { AdminComponent } from './components/admin/admin.component';
+import { AdminSectionGuardGuard } from './admin-section-guard.guard';
 
 const routes: Routes = [
-  {path: 'status/:email/:projectid', component: StatusComponent},
-  {path: 'index', component: DefaultComponent},
-  {path: 'admin-registration', component: AdminRegistrationComponent},
-  {path: 'admin-login', component: AdminLoginComponent},
-  {path: 'admin-logout', component: AdminLogoutComponent},
-  {path: 'admin-edit/:projectid', component: AdminEditComponent},
-  {path: 'admin-create', component: AdminCreateComponent},
-  {path: 'admin', component: AdminComponent},
+  { path: 'status/:email/:projectid', component: StatusComponent },
+  { path: 'index', component: DefaultComponent },
+  { path: 'admin-registration', component: AdminRegistrationComponent },
+  { path: 'admin-login', component: AdminLoginComponent },
+  { path: 'admin-logout', component: AdminLogoutComponent },
+  { path: 'admin-edit/:projectid', component: AdminEditComponent, canActivate: [AdminSectionGuardGuard] },
+  { path: 'admin-create', component: AdminCreateComponent, canActivate: [AdminSectionGuardGuard] },
+  { path: 'admin', component: AdminComponent, canActivate: [AdminSectionGuardGuard] },
 
-  {path: '', redirectTo: 'index', pathMatch: 'full'}
+  { path: '', redirectTo: 'index', pathMatch: 'full' }
 ];
 
 @NgModule({

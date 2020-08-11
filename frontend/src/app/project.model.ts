@@ -1,9 +1,10 @@
 export interface Project {
-    _id: String;
-    title: String;
-    description: String;
+    _id: string;
+    title: string;
+    description: string;
     created_date: Date;
     end_date: Date;
-    client_email: String;
+    client_email: string;
+    client_telephone: string;
     finished: boolean;
 }

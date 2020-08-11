@@ -13,26 +13,18 @@ export class AdminComponent implements OnInit {
   username: String = '';
   projects: Project[];
   projectsCreated: boolean = true;
-  projectsColumns = ['projecttitle', 'status', 'startdate', 'enddate', 'customeremail', 'delete'];
+  projectsColumns = ['projecttitle', 'status', 'startdate', 'enddate', 'customeremail', 'customertelephone', 'delete'];
   unfinishedText: String;
   finishedText: String;
 
   constructor(private projectstatusService: ProjectstatusService, private router: Router, private snackBar: MatSnackBar) {
-    this.projectstatusService.checkAdminAuthentication().subscribe(
-      data => {
-        this.loadUsername();
-        this.loadProjects();
-        this.unfinishedText=$localize`UNFINISHED`;
-        this.finishedText=$localize`finished`;
-      },
-      error => {
-        this.router.navigate(['/admin-login']);
-      }
-    );
+    this.unfinishedText = $localize`UNFINISHED`;
+    this.finishedText = $localize`finished`;
   }
 
   ngOnInit(): void {
-
+    this.loadUsername();
+    this.loadProjects();
   }
 
   loadUsername() {
