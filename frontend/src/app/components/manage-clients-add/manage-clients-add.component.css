@@ -1,0 +1,9 @@
+.new-form-field {
+    width: 100%;
+}
+
+.button-submit-project {
+    margin-right: 10px;
+    background-color: green;
+    color: white;
+}

@@ -50,5 +50,4 @@ export class AdminComponent implements OnInit {
       this.snackBar.open($localize`OK! Project was deleted.`, "OK", { duration: 4000 });
     });
   }
-
 }

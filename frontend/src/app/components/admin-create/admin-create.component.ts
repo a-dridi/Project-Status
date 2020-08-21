@@ -8,6 +8,7 @@ import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { Project } from 'src/app/project.model';
 import { EmailtTextTemplateTexts } from 'src/app/emailTextTemplateTexts';
 import { SmsTextTemplateTexts } from 'src/app/smsTextTemplateTexts';
+import { Client } from 'src/app/client.model';
 
 @Component({
   selector: 'app-admin-create',
@@ -29,6 +30,9 @@ export class AdminCreateComponent implements OnInit {
   projectStageNumberCounter: number = 1;
   projectStageIdCounter: number = 0;
   enddateEmailString: string = "";
+  notificationType: number = 2;
+  clients: Client[];
+  selectedClient: Client;
 
   constructor(private projectstatusService: ProjectstatusService, private projectForm: FormBuilder, private router: Router, private snackBar: MatSnackBar) {
     this.startdatePlaceholder = $localize`Start Date`;
@@ -42,14 +46,6 @@ export class AdminCreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.projectstatusService.checkAdminAuthentication().subscribe(
-      data => {
-      },
-      error => {
-        this.router.navigate(['/admin-login']);
-      }
-    );
-
     this.createForm = this.projectForm.group({
       startdate: [''],
       title: ['', Validators.required],
@@ -61,6 +57,12 @@ export class AdminCreateComponent implements OnInit {
 
     this.projectStagesForm = this.projectForm.group({
       projectStagesInput: this.projectForm.array([this.createProjectStageInputItem()])
+    });
+
+    this.projectstatusService.getAllClients().subscribe((clientsData: Client[]) => {
+      this.clients = clientsData;
+    }, (err) => {
+      console.log(err);
     });
   }
 
@@ -137,10 +139,12 @@ export class AdminCreateComponent implements OnInit {
       endDateFinalString = parsedEndDate.toString();
       this.enddateEmailString = enddate;
     }
-    this.projectstatusService.addProject(startDateFinalString, title, description, email, telephone, endDateFinalString).subscribe((savedProjectId: String) => {
+    this.projectstatusService.addProject(startDateFinalString, title, description, email, telephone, endDateFinalString, this.notificationType).subscribe((savedProjectId: String) => {
       if (savedProjectId) {
         this.saveProjectStages(savedProjectId);
-        this.sendProjectStartedNotification(title, email, telephone, savedProjectId, this.enddateEmailString);
+        if (this.notificationType > 0) {
+          this.sendProjectStartedNotification(title, email, telephone, savedProjectId, this.enddateEmailString);
+        }
       }
     }, (err) => {
       this.snackBar.open($localize`Error. Cannot create project. `, "OK", {
@@ -178,6 +182,15 @@ export class AdminCreateComponent implements OnInit {
         });
       }
     });
+  }
+
+  /**
+   * Sets email and telephone number of selected client in the form
+   * @param event 
+   */
+  setClientDetails(event) {
+    this.createForm.get("email").setValue(this.selectedClient.email);
+    this.createForm.get("telephone").setValue(this.selectedClient.telephone);
   }
 
 }

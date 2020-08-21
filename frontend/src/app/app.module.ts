@@ -30,6 +30,10 @@ import { AdminDataSharingService } from './admindatasharingservice';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
+import { ManageClientsComponent } from './manage-clients/manage-clients.component';
+import { ManageClientsAddComponent } from './manage-clients-add/manage-clients-add.component';
+import { ManageClientsEditComponent } from './manage-clients-edit/manage-clients-edit.component';
+import { EditClientDialogComponent } from './components/edit-client-dialog/edit-client-dialog.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +45,11 @@ import { MatButtonModule } from '@angular/material/button';
     AdminComponent,
     AdminLogoutComponent,
     AdminCreateComponent,
-    AdminEditComponent
+    AdminEditComponent,
+    ManageClientsComponent,
+    ManageClientsAddComponent,
+    ManageClientsEditComponent,
+    EditClientDialogComponent
   ],
   imports: [
     BrowserModule,

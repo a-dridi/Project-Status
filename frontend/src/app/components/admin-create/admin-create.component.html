@@ -22,6 +22,14 @@
                 <input matInput placeholder="{{descriptionPlaceholder}}" formControlName="description" #description>
             </mat-form-field>
             <mat-form-field class="field-full-width">
+                <mat-label><span i18n>Select Client</span></mat-label>
+                <mat-select (selectionChange)="setClientDetails($event)" [(value)]="selectedClient">
+                    <mat-option *ngFor="let client of clients" [value]="client.name">
+                        {{client.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="field-full-width">
                 <input matInput placeholder="{{emailPlaceholder}}" formControlName="email" #email>
             </mat-form-field>
             <mat-form-field class="field-full-width">
@@ -68,6 +76,15 @@
                     </form>
                 </mat-expansion-panel>
             </mat-accordion>
+            <br>
+            <br>
+            <div><span i18n>Send Notification: </span>
+                <mat-radio-group aria-label="Select a notification method" [(ngModel)]="notificationType">
+                    <mat-radio-button value="0"><span i18n>None</span></mat-radio-button>
+                    <mat-radio-button value="1"><span i18n>Only Project End</span></mat-radio-button>
+                    <mat-radio-button value="2"><span i18n>All</span></mat-radio-button>
+                </mat-radio-group>
+            </div>
             <br>
             <br>
             <button id="submitButton" type="submit"

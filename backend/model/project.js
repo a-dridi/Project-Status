@@ -13,6 +13,9 @@ let Project = new Schema({
     description: {
         type: String
     },
+    client_name: {
+        type: String
+    },
     client_email: {
         type: String
     },
@@ -25,6 +28,10 @@ let Project = new Schema({
     finished: {
         type: Boolean,
         default: false
+    },
+    notification_type: {
+        type: Number,
+        default: 2
     }
 });
 

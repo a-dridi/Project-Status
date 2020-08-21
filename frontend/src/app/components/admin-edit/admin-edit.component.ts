@@ -39,6 +39,8 @@ export class AdminEditComponent implements OnInit {
   updatedEmail: string;
   updatedTelephone: string;
   updatedEnddate: string;
+  //Default: complete notification - 0: no notification - 1: only project end notification - 2: complete notification
+  notificationType: number = 2;
   notificationSent: boolean = false;
   enddateEmailString: string = "";
 
@@ -71,14 +73,6 @@ export class AdminEditComponent implements OnInit {
    * Check if user is authenticated. Load called project id. If it does not exist, then redirect to admin page. 
    */
   ngOnInit(): void {
-    this.projectstatusService.checkAdminAuthentication().subscribe(
-      data => {
-      },
-      error => {
-        this.router.navigate(['/admin-login']);
-      }
-    );
-
     this.route.params.subscribe(
       params => {
         this.projectstatusService.getProjectById(params.projectid).subscribe((data: Project) => {
@@ -142,7 +136,7 @@ export class AdminEditComponent implements OnInit {
   /**
    * Updates Project and Project Stages
    */
-  editProject(startdate, title, description, email, telephone, enddate) {
+  editProject(startdate, title, description, email, telephone, enddate, sendNotification) {
     //Parse date into ISO-8601 format
     let parsedStartDate = new Date();
     let parsedEndDate = new Date();
@@ -172,7 +166,7 @@ export class AdminEditComponent implements OnInit {
   saveProjectStages() {
     let projectStagesFormArray = (this.projectStagesForm.controls['projectStagesInput'] as FormArray);
     let i = 0;
-    this.projectStagesLastIndex = projectStagesFormArray.controls.length-1;
+    this.projectStagesLastIndex = projectStagesFormArray.controls.length - 1;
 
     //let projectStagesLastIndex = this.selectedProjectStages.length-1;
     projectStagesFormArray.controls.forEach((projectStagesFormElement, index) => {
@@ -230,17 +224,22 @@ export class AdminEditComponent implements OnInit {
    * @param description 
    * @param email 
    * @param enddate 
+   * @param sendNotification
    */
   updateProject(startdate, title, description, email, telephonenumber, enddate, enddateEmailString) {
     //Send a "project completed" notification if project is finished and a "step finished" notification if a stage is finished
     if (this.amountOfFinishedProjectStages === this.projectStagesLastIndex) {
       this.projectFinished = true;
-      this.sendProjectFinishedNotification(email, telephonenumber, title);
+      if (this.notificationType > 0) {
+        this.sendProjectFinishedNotification(email, telephonenumber, title);
+      }
     } else {
-      this.sendProjectStageFinishedNotification(this.selectedProject._id, email, telephonenumber, title, enddateEmailString, this.amountOfFinishedProjectStages, this.projectStagesLastIndex);
+      if (this.notificationType > 1) {
+        this.sendProjectStageFinishedNotification(this.selectedProject._id, email, telephonenumber, title, enddateEmailString, this.amountOfFinishedProjectStages, this.projectStagesLastIndex);
+      }
     }
 
-    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, telephonenumber, enddate, this.projectFinished).subscribe(() => {
+    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, telephonenumber, enddate, this.projectFinished, this.notificationType).subscribe(() => {
       this.snackBar.open($localize`OK. Project was updated.`, "OK", {
         duration: 6000
       });

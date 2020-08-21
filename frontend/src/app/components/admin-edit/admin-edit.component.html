@@ -76,6 +76,16 @@
             </mat-accordion>
             <br>
             <br>
+            <div><span i18n>Send Notification: </span>
+                <mat-radio-group aria-label="Select a notification method" [(ngModel)]="notificationType">
+                    <mat-radio-button value="0"><span i18n>None</span></mat-radio-button>
+                    <mat-radio-button value="1"><span i18n>Only Project End</span></mat-radio-button>
+                    <mat-radio-button value="2"><span i18n>All</span></mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+            <br>
+            <br>
             <button id="submitButton" type="submit"
                 (click)="editProject(startdate.value, title.value, description.value, email.value, telephone.value, enddate.value)"
                 [disabled]="editForm.invalid" mat-raised-button color="primary" class="button-submit-project"><i

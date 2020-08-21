@@ -15,6 +15,7 @@ const path = require('path')
 import AdminAccount from "./model/AdminAccount";
 import Project from "./model/Project";
 import ProjectStage from "./model/ProjectStage";
+import Client from "./model/client";
 
 const DATABASE_CONNECTION = "mongodb://127.0.0.1/projectstatus";
 //Email settings - Check the file credentials/emailCredentials.txt
@@ -417,7 +418,7 @@ router.route("/projectstages").get((req, res) => {
     });
 });
 
-//getProjectStageById()
+//getProjectStageById(id)
 router.route("/projectstage/:id").get((req, res) => {
     ProjectStage.findById(req.params.id, (err, projectstage) => {
         if (err) {
@@ -534,6 +535,85 @@ router.route("/sms/client/notification").post((req, res) => {
                 console.log(responseData);
             }
         });
+});
+
+
+//getAllClients()
+router.route("/clients").get((req, res) => {
+    Client.find((err, clients) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(clients);
+        }
+    });
+});
+
+//getClientById(id)
+router.route("/client/:id").get((req, res) => {
+    Client.findById(req.params.id, (err, client) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(client);
+        }
+    });
+});
+
+//addClient()
+router.route("client/add").post((req, res) => {
+    let newClient = new Client(req.body);
+    newClient.save()
+        .then(projectstage => {
+            res.status(200).json("New client was added.");
+        })
+        .catch(err => {
+            res.status(400).json("Error! Client could not be saved.");
+            console.log(err);
+        });
+});
+
+//updateClient(id)
+router.route("/client/update/:id").post((req, res) => {
+    Client.findById(req.params.id, (err, client) => {
+        if (!client) {
+            res.status(400).json("The client that should be updated was not found.");
+        } else {
+            client.name = req.body.name;
+            client.email = req.body.email;
+            client.telephone = req.body.telephone;
+            client.save().then(updatedClient => {
+                res.status(200).json("Client was successfully updated.");
+            }).catch(err => {
+                res.status(400).json("Error! Client could not be updated.");
+                console.log(err);
+            });
+        }
+    });
+});
+
+//deleteAllClient()
+router.route("/clients/deleteall").get((req, res) => {
+    Client.remove({}, (err) => {
+        if (err) {
+            res.status(400).json("Error. Clients could not be deleted.");
+            console.log(err);
+        } else {
+            res.status(200).json("Clients were successfully deleted.");
+        }
+    });
+});
+
+//deleteClientById(id)
+router.route("/client/delete/:id").get((req, res) => {
+    Client.findByIdAndRemove({ _id: req.params.id }, (err, client) => {
+        if (err) {
+            res.status(400).json("Error! Client could not be deleted.");
+            console.log(err);
+        } else {
+            res.status(200).json("Client was successfully deleted.");
+        }
+    });
 });
 
 

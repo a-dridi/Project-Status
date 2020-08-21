@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EmailValidator } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class ProjectstatusService {
     return this.httpClient.get(`${this.API_URL}/project/customer/${id}/${email}`);
   }
 
-  addProject(createdDate, title, description, clientEmail, clientTelephone, endDate) {
+  addProject(createdDate, title, description, clientEmail, clientTelephone, endDate, notificationType) {
     const newProject = {
       title: title,
       created_date: createdDate,
@@ -38,12 +39,13 @@ export class ProjectstatusService {
       client_email: clientEmail,
       client_telephone: clientTelephone,
       end_date: endDate,
-      finished: false
+      finished: false,
+      notification_type: notificationType
     };
     return this.httpClient.post(`${this.API_URL}/project/add`, newProject);
   }
 
-  updateProject(id, createdDate, title, description, clientEmail, clientTelephone, endDate, projectFinished) {
+  updateProject(id, createdDate, title, description, clientEmail, clientTelephone, endDate, projectFinished, notificationType) {
     const updatedProject = {
       title: title,
       created_date: createdDate,
@@ -51,7 +53,8 @@ export class ProjectstatusService {
       client_email: clientEmail,
       client_telephone: clientTelephone,
       end_date: endDate,
-      finished: projectFinished
+      finished: projectFinished,
+      notification_type: notificationType
     };
     return this.httpClient.post(`${this.API_URL}/project/update/${id}`, updatedProject);
   }
@@ -85,7 +88,6 @@ export class ProjectstatusService {
       project_id: projectId
     };
     return this.httpClient.post(`${this.API_URL}/projectstage/add`, newProjectStage);
-
   }
 
   updateProjectStageById(id, stageNumber, title, description, finished, projectId) {
@@ -97,7 +99,6 @@ export class ProjectstatusService {
       project_id: projectId
     };
     return this.httpClient.post(`${this.API_URL}/projectstage/update/${id}`, updatedProject);
-
   }
 
 
@@ -125,12 +126,12 @@ export class ProjectstatusService {
 
   async checkAdminAuthenticationSync() {
     //return this.http.get(`${this.uri}/admin`);
-   return await this.httpClient.get(`${this.API_URL}/admin`, {
+    return await this.httpClient.get(`${this.API_URL}/admin`, {
       observe: 'body',
       withCredentials: true,
       headers: new HttpHeaders().append('Content-Type', 'application/json')
     }).toPromise();
-   
+
   }
 
   doAdminLogin(body: any) {
@@ -187,6 +188,42 @@ export class ProjectstatusService {
       headers: new HttpHeaders().append('Content-Type', 'application/json')
     });
   }
+
+  getAllClients() {
+    return this.httpClient.get(`${this.API_URL}/clients`);
+  }
+
+  getClientById(id) {
+    return this.httpClient.get(`${this.API_URL}/client/${id}`);
+  }
+
+  addClient(name, email, telephone) {
+    const newClient = {
+      name: name,
+      email: email,
+      telephone: telephone
+    };
+    return this.httpClient.post(`${this.API_URL}/client/add`, newClient);
+  }
+
+  updateClient(id, name, email, telephone) {
+    const updatedClient = {
+      name: name,
+      email: email,
+      telephone: telephone
+    };
+    return this.httpClient.post(`${this.API_URL}/client/update/${id}`, updatedClient);
+  }
+
+  deleteAllClient() {
+    return this.httpClient.get(`${this.API_URL}/clients/deleteall`);
+  }
+
+  deleteClientById(id) {
+    return this.httpClient.get(`${this.API_URL}/client/delete/${id}`);
+  }
+
+
 }
 
 
