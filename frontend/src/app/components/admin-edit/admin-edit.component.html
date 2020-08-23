@@ -78,9 +78,12 @@
             <br>
             <div><span i18n>Send Notification: </span>
                 <mat-radio-group aria-label="Select a notification method" [(ngModel)]="notificationType">
-                    <mat-radio-button value="0"><span i18n>None</span></mat-radio-button>
-                    <mat-radio-button value="1"><span i18n>Only Project End</span></mat-radio-button>
-                    <mat-radio-button value="2"><span i18n>All</span></mat-radio-button>
+                    <mat-radio-button value="0" class="notification-radio-first"><span i18n>None</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="1" class="notification-radio-other"><span i18n>Only Project End</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="2" class="notification-radio-other" checked><span i18n>All</span>
+                    </mat-radio-button>
                 </mat-radio-group>
             </div>
 

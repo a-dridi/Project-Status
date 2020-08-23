@@ -198,6 +198,7 @@ export class ProjectstatusService {
   }
 
   addClient(name, email, telephone) {
+    console.log("name " + name);
     const newClient = {
       name: name,
       email: email,

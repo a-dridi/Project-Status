@@ -19,16 +19,17 @@ export class EditClientDialogComponent implements OnInit {
 
   constructor(public editClientDialogRef: MatDialogRef<EditClientDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: EditClientDialogData, private snackBar: MatSnackBar, private projectSatusService: ProjectstatusService, private editClientForm: FormBuilder) {
     this.updateClientForm = this.editClientForm.group({
-      name: [''],
-      email: [''],
-      telephone: ['']
+      clientName: [''],
+      clientEmail: [''],
+      clientTelephone: ['']
     });
   }
 
   ngOnInit(): void {
-    this.updateClientForm.get("name").setValue(this.data.name);
-    this.updateClientForm.get("email").setValue(this.data.email);
-    this.updateClientForm.get("telephone").setValue(this.data.telephone);
+    console.log("data name " + this.data.name);
+    this.updateClientForm.get("clientName").setValue(this.data.name);
+    this.updateClientForm.get("clientEmail").setValue(this.data.email);
+    this.updateClientForm.get("clientTelephone").setValue(this.data.telephone);
   }
 
   updateClient(clientName, clientEmail, clientTelephone) {

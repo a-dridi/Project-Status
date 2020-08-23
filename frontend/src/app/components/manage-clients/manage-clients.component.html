@@ -1,1 +1,14 @@
-<p>manage-clients works!</p>
+<button mat-raised-button color="orange" routerLink="/admin" class="admin-button">
+    <mat-icon aria-label="Dashboard icon">dashboard</mat-icon>
+    <span i18n class="button-title">All Projects</span>
+</button>
+<br>
+<mat-divider></mat-divider>
+<br>
+<h3 class="section-title" i18n>Add New Client</h3>
+<app-manage-clients-add></app-manage-clients-add>
+<br>
+<mat-divider></mat-divider>
+<br>
+<h3 class="section-title" i18n>Edit Clients</h3>
+<app-manage-clients-edit></app-manage-clients-edit>

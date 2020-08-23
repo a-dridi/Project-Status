@@ -1,9 +1,19 @@
-.new-form-field {
+.add-client-form {
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 100%;
+}
+
+.new-form-field{
     width: 100%;
 }
 
 .button-submit-project {
-    margin-right: 10px;
+    margin-left: 0px;
     background-color: green;
     color: white;
+}
+
+.button-text{
+    margin-left: 5px;
 }

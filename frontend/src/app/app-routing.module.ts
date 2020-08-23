@@ -9,6 +9,10 @@ import { AdminEditComponent } from './components/admin-edit/admin-edit.component
 import { AdminCreateComponent } from './components/admin-create/admin-create.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { AdminSectionGuardGuard } from './admin-section-guard.guard';
+import { ManageClientsComponent } from './components/manage-clients/manage-clients.component';
+import { LegalNoticeComponent } from './components/legal-notice/legal-notice.component';
+import { ContactComponent } from './components/contact/contact.component';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   { path: 'status/:email/:projectid', component: StatusComponent },
@@ -19,6 +23,10 @@ const routes: Routes = [
   { path: 'admin-edit/:projectid', component: AdminEditComponent, canActivate: [AdminSectionGuardGuard] },
   { path: 'admin-create', component: AdminCreateComponent, canActivate: [AdminSectionGuardGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [AdminSectionGuardGuard] },
+  { path: 'manage-clients', component: ManageClientsComponent, canActivate: [AdminSectionGuardGuard] },
+  { path: 'legal-notice', component: LegalNoticeComponent },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
+  { path: 'contact', component: ContactComponent },
 
   { path: '', redirectTo: 'index', pathMatch: 'full' }
 ];

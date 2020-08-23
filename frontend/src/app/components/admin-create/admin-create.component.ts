@@ -30,7 +30,7 @@ export class AdminCreateComponent implements OnInit {
   projectStageNumberCounter: number = 1;
   projectStageIdCounter: number = 0;
   enddateEmailString: string = "";
-  notificationType: number = 2;
+  notificationType = "2";
   clients: Client[];
   selectedClient: Client;
 
@@ -139,10 +139,11 @@ export class AdminCreateComponent implements OnInit {
       endDateFinalString = parsedEndDate.toString();
       this.enddateEmailString = enddate;
     }
-    this.projectstatusService.addProject(startDateFinalString, title, description, email, telephone, endDateFinalString, this.notificationType).subscribe((savedProjectId: String) => {
+    this.projectstatusService.addProject(startDateFinalString, title, description, email, telephone, endDateFinalString, parseInt(this.notificationType)).subscribe((savedProjectId: String) => {
       if (savedProjectId) {
         this.saveProjectStages(savedProjectId);
-        if (this.notificationType > 0) {
+        
+        if (parseInt(this.notificationType) > 0) {
           this.sendProjectStartedNotification(title, email, telephone, savedProjectId, this.enddateEmailString);
         }
       }
@@ -186,11 +187,12 @@ export class AdminCreateComponent implements OnInit {
 
   /**
    * Sets email and telephone number of selected client in the form
-   * @param event 
+   * @param selectedValue 
    */
-  setClientDetails(event) {
-    this.createForm.get("email").setValue(this.selectedClient.email);
-    this.createForm.get("telephone").setValue(this.selectedClient.telephone);
+  setClientDetails(selectedValue) {
+    console.log("changed " + selectedValue.email);
+    this.createForm.get("email").setValue(selectedValue.email);
+    this.createForm.get("telephone").setValue(selectedValue.telephone);
   }
 
 }

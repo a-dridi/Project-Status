@@ -25,15 +25,24 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule } from '@angular/material/sort';
+
 import { ProjectstatusService } from './projectstatus.service';
 import { AdminDataSharingService } from './admindatasharingservice';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { ManageClientsComponent } from './manage-clients/manage-clients.component';
-import { ManageClientsAddComponent } from './manage-clients-add/manage-clients-add.component';
-import { ManageClientsEditComponent } from './manage-clients-edit/manage-clients-edit.component';
+import { ManageClientsComponent } from './components/manage-clients/manage-clients.component';
+import { ManageClientsAddComponent } from './components/manage-clients-add/manage-clients-add.component';
+import { ManageClientsEditComponent } from './components/manage-clients-edit/manage-clients-edit.component';
 import { EditClientDialogComponent } from './components/edit-client-dialog/edit-client-dialog.component';
+import { LegalNoticeComponent } from './components/legal-notice/legal-notice.component';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
+import { ContactComponent } from './components/contact/contact.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +58,10 @@ import { EditClientDialogComponent } from './components/edit-client-dialog/edit-
     ManageClientsComponent,
     ManageClientsAddComponent,
     ManageClientsEditComponent,
-    EditClientDialogComponent
+    EditClientDialogComponent,
+    LegalNoticeComponent,
+    PrivacyPolicyComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +82,12 @@ import { EditClientDialogComponent } from './components/edit-client-dialog/edit-
     MatInputModule,
     MatToolbarModule,
     MatSnackBarModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDividerModule,
+    MatPaginatorModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSortModule
   ],
   providers: [ProjectstatusService, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }, AdminDataSharingService],
   bootstrap: [AppComponent]

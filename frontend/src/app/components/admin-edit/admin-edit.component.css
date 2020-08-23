@@ -16,3 +16,11 @@
 .field-full-width {
     width: 100%;
 }
+
+.notification-radio-first{
+    padding-left: 15px;
+}
+
+.notification-radio-other{
+    padding-left: 10px;
+}

@@ -1,34 +1,21 @@
-<h3 i18n>Add New Client</h3>
-<form>
+<form [formGroup]="addClientFormGroup" class="add-client-form">
     <mat-form-field class="new-form-field">
         <mat-label>Client Name</mat-label>
-        <input matInput type="text" [(ngModel)]="newClientName">
-        <button mat-button *ngIf="newClientName" matSuffix mat-icon-button aria-label="Clear"
-            (click)="newClientName=''">
-            <mat-icon>close</mat-icon>
-        </button>
+        <input matInput type="text" formControlName="name" #name>
     </mat-form-field>
 
     <mat-form-field class="new-form-field">
         <mat-label>Client Email</mat-label>
-        <input matInput type="email" [(ngModel)]="newClientEmail">
-        <button mat-button *ngIf="newClientEmail" matSuffix mat-icon-button aria-label="Clear"
-            (click)="newClientEmail=''">
-            <mat-icon>close</mat-icon>
-        </button>
+        <input matInput type="email" formControlName="email" #email>
     </mat-form-field>
 
     <mat-form-field class="new-form-field">
         <mat-label>Client Telephone</mat-label>
-        <input matInput type="telephone" [(ngModel)]="newClientTelephone">
-        <button mat-button *ngIf="newClientTelephone" matSuffix mat-icon-button aria-label="Clear"
-            (click)="newClientTelephone=''">
-            <mat-icon>close</mat-icon>
-        </button>
+        <input matInput type="telephone" formControlName="telephone" #telephone>
     </mat-form-field>
 
     <button id="submitButton" type="submit"
-        (click)="addClient()"
+        (click)="addClient(name.value, email.value, telephone.value)"
         mat-raised-button color="primary"
         class="button-submit-project"><i class="fas fa-check"></i> <span i18n class="button-text">OK</span></button>
 </form>

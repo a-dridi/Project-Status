@@ -2,19 +2,19 @@
 <div mat-dialog-content>
     <form [formGroup]="updateClientForm">
         <mat-form-field>
-            <input matInput placeholder="clientNamePlaceholder" formControlName="clientName" #clientName>
+            <input matInput placeholder="{{clientNamePlaceholder}}" formControlName="clientName" #clientName>
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="clientEmailPlaceholder" formControlName="clientEmail" #clientEmail>
+            <input matInput placeholder="{{clientEmailPlaceholder}}" formControlName="clientEmail" #clientEmail>
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="clientTelephonePlaceholder" formControlName="clientTelephone" #clientTelephone>
+            <input matInput placeholder="{{clientTelephonePlaceholder}}" formControlName="clientTelephone" #clientTelephone>
         </mat-form-field>
         <br><br>
         <button mat-raised-button type="submit"
-            (click)="updateClient(clientName.value, clientEmail.value, clientTelephone.value)" color="primary"
+            (click)="updateClient(clientName.value, clientEmail.value, clientTelephone.value)" color="green"
             class="button-submit-client"><span i18n>Save</span></button>
-        <button mat-raised-button color="accent" (click)="onCancelEdit()"><span i18n>Cancel</span></button>
+        <button mat-raised-button color="accent" (click)="onCancelEdit()" class="button-cancel-client"><span i18n>Cancel</span></button>
     </form>
 
 </div>

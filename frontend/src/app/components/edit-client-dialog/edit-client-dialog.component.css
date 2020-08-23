@@ -1,0 +1,10 @@
+.button-submit-client{
+    margin-right: 15px;
+    background-color: green;
+    color: white;
+}
+
+.button-cancel-client{
+    background-color: red;
+    color: white;
+}

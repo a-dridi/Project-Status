@@ -24,3 +24,20 @@
 .button-text {
     margin-left: 10px;
 }
+
+.notification-radio-first{
+    padding-left: 15px;
+}
+
+.notification-radio-other{
+    padding-left: 10px;
+}
+
+.clientDetails{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid lightgray;
+
+}
+

@@ -5,19 +5,24 @@
             <mat-icon aria-label="Add icon">add</mat-icon>
             <h3 i18n>Create New Project</h3>
         </button>
+        <button mat-raised-button color="blue" routerLink="/manage-clients" class="manage-clients-button">
+            <mat-icon aria-label="People icon">people</mat-icon>
+            <h3 i18n>Manage Clients</h3>
+        </button>
+
         <br>
         <br>
         <br>
-        <table mat-table [dataSource]="projects" matSort>
+        <table mat-table [dataSource]="projectsSorted" matSort (matSortChange)="sortProjectsTable($event)">
             <ng-container matColumnDef="projecttitle">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="main-column"><span i18n>Project Title</span></th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="title" class="main-column"><span i18n>Project Title</span></th>
                 <td mat-cell *matCellDef="let element" class="main-column">
                     {{element.title}}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort><span i18n>Status</span></th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="status"><span i18n>Status</span></th>
                 <td mat-cell *matCellDef="let element">
                     {{element.finished ? finishedText : unfinishedText}}
                 </td>
@@ -25,14 +30,14 @@
 
 
             <ng-container matColumnDef="startdate">
-                <th mat-header-cell *matHeaderCellDef mat-sort><span i18n>Start Date</span></th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="startdate"><span i18n>Start Date</span></th>
                 <td mat-cell *matCellDef="let element">
                     {{(element.created_date !== null) ? (element.created_date | date: "dd.MM.yyyy") : ""}}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="enddate">
-                <th mat-header-cell *matHeaderCellDef mat-sort>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="endate">
                     <span i18n>End Date</span> </th>
                 <td mat-cell *matCellDef="let element">
                     {{(element.end_date !== null) ? (element.end_date | date: "dd.MM.yyyy") : ""}}
@@ -40,14 +45,14 @@
             </ng-container>
 
             <ng-container matColumnDef="customeremail">
-                <th mat-header-cell *matHeaderCellDef mat-sort>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="customeremail">
                     <span i18n>Customer/Client Email</span>
                 </th>
                 <td mat-cell *matCellDef="let element"> {{element.client_email}} </td>
             </ng-container>
 
             <ng-container matColumnDef="customertelephone">
-                <th mat-header-cell *matHeaderCellDef mat-sort>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="customertelephone">
                     <span i18n>Customer/Client Telephone</span>
                 </th>
                 <td mat-cell *matCellDef="let element"> {{element.client_telephone}} </td>

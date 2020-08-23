@@ -5,7 +5,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Project } from 'src/app/project.model';
 import { ProjectStage } from 'src/app/projectstage.model';
-import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { EmailtTextTemplateTexts } from 'src/app/emailTextTemplateTexts';
 import { SmsTextTemplateTexts } from 'src/app/smsTextTemplateTexts';
 
@@ -40,7 +39,7 @@ export class AdminEditComponent implements OnInit {
   updatedTelephone: string;
   updatedEnddate: string;
   //Default: complete notification - 0: no notification - 1: only project end notification - 2: complete notification
-  notificationType: number = 2;
+  notificationType = "2";
   notificationSent: boolean = false;
   enddateEmailString: string = "";
 
@@ -136,7 +135,7 @@ export class AdminEditComponent implements OnInit {
   /**
    * Updates Project and Project Stages
    */
-  editProject(startdate, title, description, email, telephone, enddate, sendNotification) {
+  editProject(startdate, title, description, email, telephone, enddate) {
     //Parse date into ISO-8601 format
     let parsedStartDate = new Date();
     let parsedEndDate = new Date();
@@ -230,16 +229,16 @@ export class AdminEditComponent implements OnInit {
     //Send a "project completed" notification if project is finished and a "step finished" notification if a stage is finished
     if (this.amountOfFinishedProjectStages === this.projectStagesLastIndex) {
       this.projectFinished = true;
-      if (this.notificationType > 0) {
+      if (parseInt(this.notificationType) > 0) {
         this.sendProjectFinishedNotification(email, telephonenumber, title);
       }
     } else {
-      if (this.notificationType > 1) {
+      if (parseInt(this.notificationType) > 1) {
         this.sendProjectStageFinishedNotification(this.selectedProject._id, email, telephonenumber, title, enddateEmailString, this.amountOfFinishedProjectStages, this.projectStagesLastIndex);
       }
     }
 
-    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, telephonenumber, enddate, this.projectFinished, this.notificationType).subscribe(() => {
+    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, telephonenumber, enddate, this.projectFinished, parseInt(this.notificationType)).subscribe(() => {
       this.snackBar.open($localize`OK. Project was updated.`, "OK", {
         duration: 6000
       });

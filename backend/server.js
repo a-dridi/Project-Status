@@ -561,8 +561,9 @@ router.route("/client/:id").get((req, res) => {
 });
 
 //addClient()
-router.route("client/add").post((req, res) => {
+router.route("/client/add").post((req, res) => {
     let newClient = new Client(req.body);
+    console.log("Add client");
     newClient.save()
         .then(projectstage => {
             res.status(200).json("New client was added.");
