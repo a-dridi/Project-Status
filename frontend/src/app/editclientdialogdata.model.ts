@@ -3,4 +3,7 @@ export interface EditClientDialogData {
     name: string;
     email: string;
     telephone: string;
+    languagecode: string;
+    selectedlanguage: any;
+    notificationmethod: string;
 }

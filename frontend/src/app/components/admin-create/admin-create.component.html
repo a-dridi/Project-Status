@@ -21,6 +21,9 @@
             <mat-form-field class="field-full-width">
                 <input matInput placeholder="{{descriptionPlaceholder}}" formControlName="description" #description>
             </mat-form-field>
+            <mat-form-field class="field-full-width">
+                <input matInput placeholder="{{projectLinkPlaceholder}}" formControlName="projectLink" #projectLink>
+            </mat-form-field>
 
             <div class="clientDetails">
                 <mat-form-field class="field-full-width">
@@ -95,7 +98,7 @@
             <br>
             <br>
             <button id="submitButton" type="submit"
-                (click)="addProject(title.value, description.value, startdate.value, enddate.value, email.value, telephone.value)"
+                (click)="addProject(title.value, description.value, startdate.value, enddate.value, email.value, telephone.value, projectLink.value)"
                 [disabled]="createForm.pristine || createForm.invalid" mat-raised-button color="primary"
                 class="button-submit-project"><i class="fas fa-check"></i> <span i18n
                     class="button-text">OK</span></button>

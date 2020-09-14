@@ -31,30 +31,36 @@ export class ProjectstatusService {
     return this.httpClient.get(`${this.API_URL}/project/customer/${id}/${email}`);
   }
 
-  addProject(createdDate, title, description, clientEmail, clientTelephone, endDate, notificationType) {
+  addProject(createdDate, title, description, projectLink, clientEmail, clientTelephone, endDate, notificationType, languagecode, notificationMethod) {
     const newProject = {
       title: title,
       created_date: createdDate,
       description: description,
+      project_progress_link: projectLink,
       client_email: clientEmail,
       client_telephone: clientTelephone,
       end_date: endDate,
       finished: false,
-      notification_type: notificationType
+      notification_type: notificationType,
+      languagecode: languagecode,
+      notificationmethod: notificationMethod
     };
     return this.httpClient.post(`${this.API_URL}/project/add`, newProject);
   }
 
-  updateProject(id, createdDate, title, description, clientEmail, clientTelephone, endDate, projectFinished, notificationType) {
+  updateProject(id, createdDate, title, description, projectLink, clientEmail, clientTelephone, endDate, projectFinished, notificationType, languagecode, notificationMethod) {
     const updatedProject = {
       title: title,
       created_date: createdDate,
       description: description,
+      project_progress_link: projectLink,
       client_email: clientEmail,
       client_telephone: clientTelephone,
       end_date: endDate,
       finished: projectFinished,
-      notification_type: notificationType
+      notification_type: notificationType,
+      languagecode: languagecode,
+      notificationmethod: notificationMethod
     };
     return this.httpClient.post(`${this.API_URL}/project/update/${id}`, updatedProject);
   }
@@ -197,21 +203,24 @@ export class ProjectstatusService {
     return this.httpClient.get(`${this.API_URL}/client/${id}`);
   }
 
-  addClient(name, email, telephone) {
-    console.log("name " + name);
+  addClient(name, email, telephone, languageCode, notificationMethod) {
     const newClient = {
       name: name,
       email: email,
-      telephone: telephone
+      telephone: telephone,
+      languagecode: languageCode,
+      notificationmethod: notificationMethod
     };
     return this.httpClient.post(`${this.API_URL}/client/add`, newClient);
   }
 
-  updateClient(id, name, email, telephone) {
+  updateClient(id, name, email, telephone, languageCode, notificationMethod) {
     const updatedClient = {
       name: name,
       email: email,
-      telephone: telephone
+      telephone: telephone,
+      languagecode: languageCode,
+      notificationmethod: notificationMethod
     };
     return this.httpClient.post(`${this.API_URL}/client/update/${id}`, updatedClient);
   }

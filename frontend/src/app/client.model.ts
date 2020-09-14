@@ -3,4 +3,6 @@ export interface Client {
     name: string;
     email: string;
     telephone: string;
+    languagecode: string;
+    notificationmethod: string;
 }

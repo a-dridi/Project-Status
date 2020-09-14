@@ -32,6 +32,18 @@ let Project = new Schema({
     notification_type: {
         type: Number,
         default: 2
+    },
+    project_progress_link: {
+        type: String,
+        default: ''
+    },
+    languagecode: {
+        type: String,
+        default: 'en'
+    },
+    notificationmethod: {
+        type: String,
+        default: 'email'
     }
 });
 

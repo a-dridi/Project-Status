@@ -1,3 +1,7 @@
+<div class="loadingAnimation" *ngIf="loadingAnimation">
+    <mat-spinner></mat-spinner>
+</div>
+
 <div class="mt-5">
     <div class="col-md-6 m-auto">
         <div class="card card-body">
@@ -5,6 +9,19 @@
                 <h3 i18n class="text-center mb-3 bold"> Status of the Project: </h3>
                 <h4><span i18n class="bold">Project Number: </span>{{loadedProject._id}}</h4>
                 <h4><span i18n class="bold">Project Name: </span>{{loadedProject.title}}</h4>
+                <br>
+                <h4 *ngIf="loadedProject.project_progress_link">
+                    <span *ngIf="!loadedProject.finished">
+                        <span i18n class="bold">Project: </span><a [href]="loadedProject.project_progress_link"
+                            target="_blank">{{loadedProject.project_progress_link}}</a>
+                    </span>
+                    <span *ngIf="loadedProject.finished">
+                        <i class="fa fa-check-square" aria-hidden="true"></i>
+                        <span i18n class="bold finished-project-text">Finished Project: </span><a
+                            [href]="loadedProject.project_progress_link"
+                            target="_blank">{{loadedProject.project_progress_link}}</a>
+                    </span>
+                </h4>
                 <br>
                 <div class="stage" *ngFor="let stage of projectStages">
                     <div *ngIf="stage.finished">
@@ -28,7 +45,8 @@
                 </div>
             </div>
             <div *ngIf="projectStatusDoesNotExist">
-                <h4 style="font-weight: bold;" i18n>Project status does not exist! Please check your email and project
+                <h4 style="font-weight: bold; color: red" i18n>Project status does not exist! Please check your email
+                    and project
                     id.</h4>
             </div>
             <button type="submit" (click)="openDefaultPage()" mat-raised-button color="primary"

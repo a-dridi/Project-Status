@@ -12,8 +12,11 @@
 
         <br>
         <br>
+        <mat-form-field class="projects-search">
+            <input matInput (keyup)="filterProjects($event.target.value)" placeholder="{{projectsFilterPlaceholder}}">
+        </mat-form-field>
         <br>
-        <table mat-table [dataSource]="projectsSorted" matSort (matSortChange)="sortProjectsTable($event)">
+        <table mat-table [dataSource]="projectsDataSource" (matSortChange)="sortProjectsTable($event)" matSort>
             <ng-container matColumnDef="projecttitle">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="title" class="main-column"><span i18n>Project
                         Title</span></th>

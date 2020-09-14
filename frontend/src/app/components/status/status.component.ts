@@ -18,6 +18,7 @@ export class StatusComponent implements OnInit {
   loadedProject: Project;
   public projectStatusLoaded: boolean = false;
   public projectStatusDoesNotExist: boolean = false;
+  loadingAnimation: Boolean = true;
 
   constructor(private router: Router, private projectstatusService: ProjectstatusService, private route: ActivatedRoute, private snackBar: MatSnackBar) {
 
@@ -30,19 +31,24 @@ export class StatusComponent implements OnInit {
 
           if (projectData.client_email === params.get('email')) {
             this.loadedProject = projectData;
+            console.log(this.loadedProject.finished);
             this.projectstatusService.getProjectStagesByProjectObjectId(params.get('projectid'))
               .subscribe((projectStagesData: ProjectStage[]) => {
                 this.projectStages = projectStagesData;
                 this.projectStatusLoaded = true;
+                this.stopLoadingAnimation();
               }, (err) => {
+                this.stopLoadingAnimation();
                 this.projectStatusDoesNotExist = true;
               });
           } else {
             this.projectStatusDoesNotExist = true;
+            this.stopLoadingAnimation();
           }
         }, (err) => {
           console.log("Project id or email is wrong!");
           this.projectStatusDoesNotExist = true;
+          this.stopLoadingAnimation();
         });
       }
     );
@@ -50,6 +56,10 @@ export class StatusComponent implements OnInit {
 
   openDefaultPage() {
     this.router.navigate(['/']);
+  }
+
+  stopLoadingAnimation(){
+    setTimeout(() => { this.loadingAnimation = false }, 200);
   }
 
 

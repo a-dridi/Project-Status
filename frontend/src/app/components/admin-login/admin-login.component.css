@@ -1,3 +1,13 @@
 .fa-icon {
     margin-right: 5px;
 }
+
+.card-body {
+    -webkit-box-shadow: 10px 10px 39px -10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 10px 10px 39px -10px rgba(0, 0, 0, 0.2);
+    box-shadow: 10px 10px 39px -10px rgba(0, 0, 0, 0.2);
+}
+
+input.mat-input-element {
+    padding: 3px;
+}

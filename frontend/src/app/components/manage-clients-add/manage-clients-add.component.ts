@@ -4,6 +4,7 @@ import { ProjectstatusService } from 'src/app/projectstatus.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResourceLoader } from '@angular/compiler';
+import { Languages } from 'src/app/util/languages';
 
 @Component({
   selector: 'app-manage-clients-add',
@@ -12,18 +13,21 @@ import { ResourceLoader } from '@angular/compiler';
 })
 export class ManageClientsAddComponent implements OnInit {
 
-  newClientName: String;
-  newClientEmail: String;
-  newClientTelephone: String;
+  newClientName: string;
+  newClientEmail: string;
+  newClientTelephone: string;
+  newClientLanguagecode: string;
+  newClientNotificationmethod: string = "email";
   addClientFormGroup: FormGroup;
+  languages: any;
 
-  constructor(private snackBar: MatSnackBar, private projectSatusService: ProjectstatusService, private addClientForm: FormBuilder, private router: Router) { 
+  constructor(private snackBar: MatSnackBar, private projectSatusService: ProjectstatusService, private addClientForm: FormBuilder, private router: Router) {
     this.addClientFormGroup = this.addClientForm.group({
       name: ['', Validators.required],
       email: [''],
       telephone: ['']
     });
-
+    this.languages = Languages.getLanguages();
   }
 
   ngOnInit(): void {
@@ -42,10 +46,13 @@ export class ManageClientsAddComponent implements OnInit {
       this.snackBar.open($localize`Please enter client telephone number.`, "OK", { duration: 4000 });
       return;
     }
-    this.projectSatusService.addClient(name, email, telephone).subscribe(() => {
+    this.projectSatusService.addClient(name, email, telephone, this.newClientLanguagecode, this.newClientNotificationmethod).subscribe(() => {
       location.reload();
       this.snackBar.open($localize`Client was added.`, "OK", { duration: 4000 });
     }, (err) => { this.snackBar.open($localize`Error! Client could not be added`, "OK", { duration: 4000 }); console.log(err); });
   }
 
+  changeNotificationMethod(notificationMethodValue) {
+    this.newClientNotificationmethod = notificationMethodValue;
+  }
 }

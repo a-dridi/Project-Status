@@ -5,11 +5,27 @@ import { ProjectstatusService } from 'src/app/projectstatus.service';
 import { AdminAccount } from 'src/app/adminaccount.model';
 import { AdminDataSharingService } from 'src/app/admindatasharingservice';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-admin-login',
   templateUrl: './admin-login.component.html',
-  styleUrls: ['./admin-login.component.css']
+  styleUrls: ['./admin-login.component.css'],
+  animations: [trigger('errorSwiggle', [
+    transition('false => true', animate('500ms ease-in',
+      keyframes([
+        style({ transform: 'translate3d(-1px, 0, 0', offset: 0.1 }),
+        style({ transform: 'translate3d(2px, 0, 0', offset: 0.2 }),
+        style({ transform: 'translate3d(-4px, 0, 0', offset: 0.3 }),
+        style({ transform: 'translate3d(4px, 0, 0', offset: 0.4 }),
+        style({ transform: 'translate3d(-4px, 0, 0', offset: 0.5 }),
+        style({ transform: 'translate3d(4px, 0, 0', offset: 0.6 }),
+        style({ transform: 'translate3d(-4px, 0, 0', offset: 0.7 }),
+        style({ transform: 'translate3d(2px, 0, 0', offset: 0.8 })
+      ])
+    ))
+  ])
+  ]
 })
 export class AdminLoginComponent implements OnInit {
 
@@ -17,6 +33,7 @@ export class AdminLoginComponent implements OnInit {
   adminAccountCreated: boolean = true;
   emailPlaceholder: String;
   passwordPlaceholder: String;
+  loginFailed: boolean = false;
 
   constructor(private adminDataSharingService: AdminDataSharingService, private adminLoginForm: FormBuilder, private router: Router, private projectStatusService: ProjectstatusService, private snackbar: MatSnackBar) {
     this.emailPlaceholder = "Your e-mail:";
@@ -37,9 +54,10 @@ export class AdminLoginComponent implements OnInit {
     });
   }
 
-  loginAdmin(email, password) {
+  loginAdmin() {
     if (!this.loginForm.valid) {
       this.snackbar.open($localize`Login failed! Please check your email or password`, "OK", { duration: 10000 });
+      this.loginFailed=true;
       return;
     }
 
@@ -51,7 +69,6 @@ export class AdminLoginComponent implements OnInit {
           this.adminDataSharingService.adminLoggedIn.next(true);
           this.router.navigate(['/admin']);
           this.router.navigated = false;
-
         },
 
         error => {
@@ -59,6 +76,7 @@ export class AdminLoginComponent implements OnInit {
           this.snackbar.open($localize`LOGIN FAILED. Please enter your correct email address and password of your admin account.`, "OK", {
             duration: 10000
           });
+          this.loginFailed=true;
         }
       );
   }

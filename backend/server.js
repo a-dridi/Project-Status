@@ -373,6 +373,9 @@ router.route('/project/update/:id').post((req, res) => {
             project.client_email = req.body.client_email;
             project.client_telephone = req.body.client_telephone;
             project.finished = req.body.finished;
+            project.project_progress_link = req.body.project_progress_link;
+            project.languagecode = req.body.languagecode;
+            project.notificationmethod = req.body.notificationmethod;
             project.save().then(project => {
                 res.status(200).json("Project was successfully updated.");
             }).catch(err => {
@@ -527,7 +530,7 @@ router.route("/email/client/notification").post((req, res) => {
 //sendSMSNotificationClient()
 router.route("/sms/client/notification").post((req, res) => {
     console.log(smsAPIKey);
-    nexmo.message.sendSms(nexmoVirtualNumber, req.body.client_number, req.body.sms_text, { type: 'unicode' },
+    nexmo.message.sendSms(nexmoVirtualNumber.replace(/\D/g, ''), req.body.client_number, req.body.sms_text, { type: 'unicode' },
         (err, responseData) => {
             if (err) {
                 console.log(err);
@@ -583,6 +586,8 @@ router.route("/client/update/:id").post((req, res) => {
             client.name = req.body.name;
             client.email = req.body.email;
             client.telephone = req.body.telephone;
+            client.languagecode = req.body.languagecode;
+            client.notificationmethod = req.body.notificationmethod;
             client.save().then(updatedClient => {
                 res.status(200).json("Client was successfully updated.");
             }).catch(err => {

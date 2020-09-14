@@ -23,6 +23,9 @@
                 <input matInput placeholder="{{descriptionPlaceholder}}" formControlName="description" #description>
             </mat-form-field>
             <mat-form-field class="field-full-width">
+                <input matInput placeholder="{{projectLinkPlaceholder}}" formControlName="projectLink" #projectLink>
+            </mat-form-field>
+            <mat-form-field class="field-full-width">
                 <input matInput placeholder="{{emailPlaceholder}}" formControlName="email" #email>
             </mat-form-field>
             <mat-form-field class="field-full-width">
@@ -90,7 +93,7 @@
             <br>
             <br>
             <button id="submitButton" type="submit"
-                (click)="editProject(startdate.value, title.value, description.value, email.value, telephone.value, enddate.value)"
+                (click)="editProject(startdate.value, title.value, description.value, email.value, telephone.value, projectLink.value, enddate.value)"
                 [disabled]="editForm.invalid" mat-raised-button color="primary" class="button-submit-project"><i
                     class="fas fa-check"></i> <span i18n class="button-text">OK</span></button>
             <button id="backButton" mat-raised-button color="accent" routerLink="/admin">

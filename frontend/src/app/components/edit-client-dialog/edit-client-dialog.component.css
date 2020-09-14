@@ -8,3 +8,11 @@
     background-color: red;
     color: white;
 }
+
+.notification-radio-first{
+    padding-left: 15px;
+}
+
+.notification-radio-other{
+    padding-left: 10px;
+}

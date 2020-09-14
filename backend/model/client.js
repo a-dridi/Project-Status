@@ -11,6 +11,14 @@ let Client = new Schema({
     },
     telephone: {
         type: String
+    },
+    languagecode: {
+        type: String,
+        default: 'en'
+    },
+    notificationmethod: {
+        type: String,
+        default: 'email'
     }
 
 });

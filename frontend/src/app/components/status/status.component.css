@@ -93,6 +93,22 @@ body {
     font-weight: bold;
 }
 
-#projectStatusView{
+#projectStatusView {
     margin-bottom: 15px;
+}
+
+.fa-check-square {
+    padding-right: 5px;
+    color: green;
+}
+
+.finished-project-text {
+    color: green;
+}
+
+.loadingAnimation {
+    margin: auto;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
 }

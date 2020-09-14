@@ -7,4 +7,7 @@ export interface Project {
     client_email: string;
     client_telephone: string;
     finished: boolean;
+    project_progress_link: string;
+    languagecode: string;
+    notificationmethod: string;
 }

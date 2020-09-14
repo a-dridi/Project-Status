@@ -5,8 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Project } from 'src/app/project.model';
 import { ProjectStage } from 'src/app/projectstage.model';
-import { EmailtTextTemplateTexts } from 'src/app/emailTextTemplateTexts';
-import { SmsTextTemplateTexts } from 'src/app/smsTextTemplateTexts';
+import { TextLanguages } from 'src/app/util/text-languages';
 
 @Component({
   selector: 'app-admin-edit',
@@ -17,6 +16,7 @@ export class AdminEditComponent implements OnInit {
   startdatePlaceholder: string;
   titlePlaceholder: string;
   descriptionPlaceholder: string;
+  projectLinkPlaceholder: string;
   emailPlaceholder: string;
   telephonePlaceholder: string;
   enddatePlaceholder: string;
@@ -24,6 +24,7 @@ export class AdminEditComponent implements OnInit {
   stageDescriptionPlaceholder: string;
   selectedProject: Project;
   selectedProjectStages: ProjectStage[];
+  amountOfProjectStages: number = 0;
   editForm: FormGroup;
   projectStagesForm: FormGroup;
   projectStageNumberCounter: number = 1;
@@ -35,6 +36,7 @@ export class AdminEditComponent implements OnInit {
   updatedStartdate: string;
   updatedTitle: string;
   updatedDescription: string;
+  updatedProjectlink: string;
   updatedEmail: string;
   updatedTelephone: string;
   updatedEnddate: string;
@@ -42,16 +44,21 @@ export class AdminEditComponent implements OnInit {
   notificationType = "2";
   notificationSent: boolean = false;
   enddateEmailString: string = "";
+  templateTextLanguages: Map<String, TextLanguages>;
+  selectedClientLanguagecode: string = "en";
+  selectedNotificationMethod: string = "email";
 
   constructor(private projectstatusService: ProjectstatusService, private projectForm: FormBuilder, private router: Router, private route: ActivatedRoute, private snackBar: MatSnackBar) {
     this.startdatePlaceholder = $localize`Start Date`;
     this.titlePlaceholder = $localize`Project Title`;
     this.descriptionPlaceholder = $localize`Project Description`;
+    this.projectLinkPlaceholder = $localize`Link to Project`;
     this.emailPlaceholder = $localize`Customer/Client Email`;
     this.telephonePlaceholder = $localize`Customer/Client Telephone`;
     this.startdatePlaceholder = $localize`End Date`;
     this.stageTitlePlaceholder = $localize`Project Stage Title`;
     this.stageDescriptionPlaceholder = $localize`Project Stage Description`;
+    this.templateTextLanguages = TextLanguages.getTextLanguages();
 
     this.editForm = this.projectForm.group({
       startdate: [''],
@@ -59,13 +66,13 @@ export class AdminEditComponent implements OnInit {
       description: [''],
       email: ['', Validators.required],
       telephone: [''],
+      projectLink: [''],
       enddate: ['']
     });
 
     this.projectStagesForm = this.projectForm.group({
       projectStagesInput: this.projectForm.array([])
     });
-
   }
 
   /**
@@ -76,10 +83,11 @@ export class AdminEditComponent implements OnInit {
       params => {
         this.projectstatusService.getProjectById(params.projectid).subscribe((data: Project) => {
           this.selectedProject = data;
-          //console.log(this.selectedProject.client_email);
+          this.selectedClientLanguagecode = this.selectedProject.languagecode;
           this.loadProjectFormValues(this.selectedProject);
           this.projectstatusService.getProjectStagesByProjectObjectId(params.projectid).subscribe((data: ProjectStage[]) => {
             this.selectedProjectStages = data;
+            this.amountOfProjectStages = this.selectedProjectStages.length;
             //console.log(this.selectedProjectStages[0].title);
             this.loadProjectStagesFormValues(this.selectedProjectStages);
           });
@@ -93,6 +101,7 @@ export class AdminEditComponent implements OnInit {
     this.editForm.get("startdate").setValue(selectedProject.created_date);
     this.editForm.get("title").setValue(selectedProject.title);
     this.editForm.get("description").setValue(selectedProject.description);
+    this.editForm.get("projectLink").setValue(selectedProject.project_progress_link);
     this.editForm.get("email").setValue(selectedProject.client_email);
     this.editForm.get("telephone").setValue(selectedProject.client_telephone);
     this.editForm.get("enddate").setValue(selectedProject.end_date);
@@ -128,14 +137,14 @@ export class AdminEditComponent implements OnInit {
     this.projectStageNumberCounter += 1;
     //The index from where new project stages are saved/added. From this index project stages are added and not updated.
     this.newProjectStagesStartIndex = this.selectedProjectStages.length;
-
+    this.amountOfProjectStages += 1;
     (this.projectStagesForm.controls['projectStagesInput'] as FormArray).push(this.setProjectStageInputItem(this.projectStageNumberCounter - 1, this.projectStageNumberCounter, $localize`Project Stage Title`, $localize`Project Stage Description`, false));
   }
 
   /**
    * Updates Project and Project Stages
    */
-  editProject(startdate, title, description, email, telephone, enddate) {
+  editProject(startdate, title, description, email, telephone, projectlink, enddate) {
     //Parse date into ISO-8601 format
     let parsedStartDate = new Date();
     let parsedEndDate = new Date();
@@ -153,6 +162,7 @@ export class AdminEditComponent implements OnInit {
     this.updatedEnddate = endDateFinalString;
     this.updatedTitle = title;
     this.updatedDescription = description;
+    this.updatedProjectlink = projectlink;
     this.updatedEmail = email;
     this.updatedTelephone = telephone;
     this.enddateEmailString = enddate;
@@ -164,7 +174,6 @@ export class AdminEditComponent implements OnInit {
    */
   saveProjectStages() {
     let projectStagesFormArray = (this.projectStagesForm.controls['projectStagesInput'] as FormArray);
-    let i = 0;
     this.projectStagesLastIndex = projectStagesFormArray.controls.length - 1;
 
     //let projectStagesLastIndex = this.selectedProjectStages.length-1;
@@ -192,7 +201,7 @@ export class AdminEditComponent implements OnInit {
     if (this.newProjectStagesStartIndex === 0) {
       this.projectstatusService.updateProjectStageById(this.selectedProjectStages[index]._id, stageNumberOfElement, stageTitleOfElement, stageDescriptionOfElement, stageFinishedOfElement, this.selectedProject._id).subscribe(() => {
         if (index === this.projectStagesLastIndex) {
-          this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedTelephone, this.updatedEnddate, this.enddateEmailString);
+          this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedTelephone, this.selectedClientLanguagecode, this.updatedProjectlink, this.updatedEnddate, this.enddateEmailString, this.selectedProject.notificationmethod);
           this.router.navigate(['/admin']);
         }
       });
@@ -210,35 +219,30 @@ export class AdminEditComponent implements OnInit {
         });
       }
       if (index === this.projectStagesLastIndex) {
-        this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedTelephone, this.updatedEnddate, this.enddateEmailString);
+        this.updateProject(this.updatedStartdate, this.updatedTitle, this.updatedDescription, this.updatedEmail, this.updatedTelephone, this.selectedClientLanguagecode, this.updatedProjectlink, this.updatedEnddate, this.enddateEmailString, this.selectedProject.notificationmethod);
         this.router.navigate(['/admin']);
       }
     }
   }
 
+
   /**
-   * Update project and mark it as finished when all project stages are finished
-   * @param startdate 
-   * @param title 
-   * @param description 
-   * @param email 
-   * @param enddate 
-   * @param sendNotification
+   *  Update project and mark it as finished when all project stages are finished
    */
-  updateProject(startdate, title, description, email, telephonenumber, enddate, enddateEmailString) {
+  updateProject(startdate, title, description, email, telephonenumber, clientLanguagecode, projectlink, enddate, enddateEmailString, notificationMethod) {
     //Send a "project completed" notification if project is finished and a "step finished" notification if a stage is finished
-    if (this.amountOfFinishedProjectStages === this.projectStagesLastIndex) {
+    if (this.amountOfFinishedProjectStages === this.amountOfProjectStages) {
       this.projectFinished = true;
       if (parseInt(this.notificationType) > 0) {
-        this.sendProjectFinishedNotification(email, telephonenumber, title);
+        this.sendProjectFinishedNotification(email, telephonenumber, clientLanguagecode, title, projectlink, notificationMethod);
       }
     } else {
       if (parseInt(this.notificationType) > 1) {
-        this.sendProjectStageFinishedNotification(this.selectedProject._id, email, telephonenumber, title, enddateEmailString, this.amountOfFinishedProjectStages, this.projectStagesLastIndex);
+        this.sendProjectStageFinishedNotification(this.selectedProject._id, email, telephonenumber, clientLanguagecode, title, projectlink, enddateEmailString, this.amountOfFinishedProjectStages, this.amountOfProjectStages, notificationMethod);
       }
     }
 
-    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, email, telephonenumber, enddate, this.projectFinished, parseInt(this.notificationType)).subscribe(() => {
+    this.projectstatusService.updateProject(this.selectedProject._id, startdate, title, description, projectlink, email, telephonenumber, enddate, this.projectFinished, parseInt(this.notificationType), clientLanguagecode, notificationMethod).subscribe(() => {
       this.snackBar.open($localize`OK. Project was updated.`, "OK", {
         duration: 6000
       });
@@ -248,20 +252,29 @@ export class AdminEditComponent implements OnInit {
   /**
    * Send an email to the customer email address. If the client number is set, then an sms will be sent instead. Tells the customer that the project finished. 
    */
-  sendProjectFinishedNotification(clientEmail, clientTelephoneNumber, projectTitle) {
+  sendProjectFinishedNotification(clientEmail, clientTelephoneNumber, clientLanguagecode, projectTitle, projectLink, notificationMethod) {
     this.projectstatusService.getAuthenticatedAdminAccount().subscribe(adminaccount => {
-      let emailSubject = EmailtTextTemplateTexts.projectFinishedSubject + projectTitle;
-      let emailText = EmailtTextTemplateTexts.projectFinishedText + "<br><br>" + EmailtTextTemplateTexts.projectFinishedFooter + "<br>" + adminaccount['name'];
+      let emailSubject = this.templateTextLanguages.get(clientLanguagecode + "emailProjectFinishedSubject").value + projectTitle;
+      let projectLinkInfoEmail = (projectLink === "") ? "" : this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectlink").value
+        + "<br><br>" + "<a href=\"" + projectLink + "\">" + projectLink + "</a>";
+      let projectLinkInfoSms = (projectLink === "") ? "" : "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectlink").value + projectLink;
+      const emailText = this.templateTextLanguages.get(clientLanguagecode + "emailProjectFinishedText").value + "<br><br>" + projectLinkInfoEmail + "<br><br>"
+        + this.templateTextLanguages.get(clientLanguagecode + "emailProjectFinishedFooter").value + "<br>" + adminaccount['name'];
+      const smsText = this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextGreeting").value + "\n" + projectLinkInfoSms +
+        "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectFinishedFooter").value + "\n" + adminaccount['name'];
 
       if (!this.notificationSent) {
-        if (clientTelephoneNumber === "") {
+        if (notificationMethod === "email" && clientTelephoneNumber === "") {
           this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
             console.log("Email notification to customer sent");
           });
-        } else {
-          const smsText = SmsTextTemplateTexts.projectFinishedText + "\n" + SmsTextTemplateTexts.projectFinishedFooter + "\n" + adminaccount['name'];
+        } else if (notificationMethod === "sms" && clientTelephoneNumber !== "") {
           this.projectstatusService.sendSMSNotificationClient(clientTelephoneNumber, smsText).subscribe(() => {
             console.log("SMS notification to customer sent");
+          });
+        } else {
+          this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
+            console.log("Email notification to customer sent");
           });
         }
       }
@@ -269,27 +282,45 @@ export class AdminEditComponent implements OnInit {
     });
   }
 
-  sendProjectStageFinishedNotification(projectId, clientEmail, clientTelephoneNumber, projectTitle, enddateEmailString, stageNumber, allStageNumber) {
+  sendProjectStageFinishedNotification(projectId, clientEmail, clientTelephoneNumber, clientLanguagecode, projectTitle, projectLink, enddateEmailString, stageNumber, allStageNumber, notificationMethod) {
     this.projectstatusService.getAuthenticatedAdminAccount().subscribe(adminaccount => {
-      let emailSubject = $localize`Project Step ` + stageNumber + `/` + allStageNumber + $localize` finished - ` + projectTitle;
+      let emailSubject = this.templateTextLanguages.get(clientLanguagecode + "emailProjectStepProjectStepTitle").value + " " + stageNumber + "/" + allStageNumber + " " + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStepFinishedTitle").value + " - " + projectTitle;
       let emailText;
-      let projectStatusLink = EmailtTextTemplateTexts.appWebsiteURL + clientEmail + "/" + projectId;
+      let smsText;
+      let projectStatusLink = this.templateTextLanguages.get(clientLanguagecode + "emailAppWebsiteURL").value + clientEmail + "/" + projectId;
+      let projectLinkInfoEmail = (projectLink === "") ? "" : this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectlink").value
+        + "<br><br>" + "<a href=\"" + projectLink + "\">" + projectLink + "</a>";
+      let projectLinkInfoSms = (projectLink === "") ? "" : "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectlink").value + projectLink;
 
       if (enddateEmailString !== "") {
-        emailText = $localize`This project step was completed: ` + this.selectedProjectStages[stageNumber - 1].title + "<br><br>" + $localize`You can check the project status at this site: ` + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextProjectEnd + "<br>" + enddateEmailString + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
+        emailText = this.templateTextLanguages.get(clientLanguagecode + "emailProjectStageFinishedTextGreeting").value + this.selectedProjectStages[stageNumber - 1].title + "<br><br>" + projectLinkInfoEmail + "<br><br>"
+          + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectstatuslink").value + " " + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>"
+          + "<br><br>" + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectEnd").value + "<br>" + enddateEmailString + "<br><br>"
+          + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextFooter").value + "<br>" + adminaccount['name'];
+        smsText = this.templateTextLanguages.get(clientLanguagecode + "smsProjectStageFinishedTextGreeting").value + this.selectedProjectStages[stageNumber - 1].title + "\n" + projectLinkInfoSms + "\n"
+          + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectstatuslink").value + "\n" + projectStatusLink + "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectEnd").value
+          + "\n" + enddateEmailString + "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextFooter").value + "\n" + adminaccount['name'];
       } else {
-        emailText = $localize`A project step was completed. You can check the project status at this site: ` + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
+        emailText = this.templateTextLanguages.get(clientLanguagecode + "emailProjectStageFinishedTextGreeting").value + this.selectedProjectStages[stageNumber - 1].title + "<br><br>" + projectLinkInfoEmail + "<br><br>"
+          + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectstatuslink").value + " " + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>"
+          + "<br><br>" + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextFooter").value + "<br>" + adminaccount['name'];
+        smsText = this.templateTextLanguages.get(clientLanguagecode + "smsProjectStageFinishedTextGreeting").value + this.selectedProjectStages[stageNumber - 1].title + "\n" + projectLinkInfoSms + "\n"
+          + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectstatuslink").value + "\n" + projectStatusLink
+          + "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextFooter").value + "\n" + adminaccount['name'];
       }
 
       if (!this.notificationSent) {
-        if (clientTelephoneNumber === "") {
+        if (notificationMethod === "email" && clientTelephoneNumber === "") {
           this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
             console.log("Email notification to customer sent");
           });
-        } else {
-          const smsText = emailSubject + $localize`This project step was completed: ` + this.selectedProjectStages[stageNumber - 1].title + "\n" + $localize`You can check the project status at this site: ` + "\n" + projectStatusLink + "\n" + EmailtTextTemplateTexts.projectStartedTextProjectEnd + "\n" + enddateEmailString + "\n" + EmailtTextTemplateTexts.projectStartedTextFooter + "\n" + adminaccount['name'];
+        } else if (notificationMethod === "sms" && clientTelephoneNumber !== "") {
           this.projectstatusService.sendSMSNotificationClient(clientTelephoneNumber, smsText).subscribe(() => {
             console.log("SMS notification to customer sent");
+          });
+        } else {
+          this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
+            console.log("Email notification to customer sent");
           });
         }
       }

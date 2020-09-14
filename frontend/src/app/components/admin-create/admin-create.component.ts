@@ -6,9 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectStage } from 'src/app/projectstage.model';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 import { Project } from 'src/app/project.model';
-import { EmailtTextTemplateTexts } from 'src/app/emailTextTemplateTexts';
-import { SmsTextTemplateTexts } from 'src/app/smsTextTemplateTexts';
 import { Client } from 'src/app/client.model';
+import { Languages } from 'src/app/util/languages';
+import { TextLanguages } from 'src/app/util/text-languages';
 
 @Component({
   selector: 'app-admin-create',
@@ -22,6 +22,7 @@ export class AdminCreateComponent implements OnInit {
   descriptionPlaceholder: string;
   emailPlaceholder: string;
   telephonePlaceholder: string;
+  projectLinkPlaceholder: string;
   enddatePlaceholder: string;
   stageTitlePlaceholder: string;
   stageDescriptionPlaceholder: string;
@@ -33,6 +34,8 @@ export class AdminCreateComponent implements OnInit {
   notificationType = "2";
   clients: Client[];
   selectedClient: Client;
+  templateTextLanguages: Map<String, TextLanguages>;
+  selectedClientLanguagecode: string = "en";
 
   constructor(private projectstatusService: ProjectstatusService, private projectForm: FormBuilder, private router: Router, private snackBar: MatSnackBar) {
     this.startdatePlaceholder = $localize`Start Date`;
@@ -40,9 +43,11 @@ export class AdminCreateComponent implements OnInit {
     this.descriptionPlaceholder = $localize`Project Description`;
     this.emailPlaceholder = $localize`Customer/Client Email`;
     this.telephonePlaceholder = $localize`Customer/Client Telephone`;
+    this.projectLinkPlaceholder = $localize`Link to Project`;
     this.startdatePlaceholder = $localize`Start Date`;
     this.stageTitlePlaceholder = $localize`Project Stage Title`;
     this.stageDescriptionPlaceholder = $localize`Project Stage Description`;
+    this.templateTextLanguages = TextLanguages.getTextLanguages();
   }
 
   ngOnInit(): void {
@@ -52,6 +57,7 @@ export class AdminCreateComponent implements OnInit {
       description: [''],
       email: ['', Validators.required],
       telephone: [''],
+      projectLink: [''],
       enddate: ['']
     });
 
@@ -124,7 +130,7 @@ export class AdminCreateComponent implements OnInit {
    * @param email 
    * @param telephone
    */
-  addProject(title, description, startdate, enddate, email, telephone) {
+  addProject(title, description, startdate, enddate, email, telephone, projectLink) {
     //Parse date into ISO-8601 format
     let parsedStartDate = new Date();
     let parsedEndDate = new Date();
@@ -139,12 +145,12 @@ export class AdminCreateComponent implements OnInit {
       endDateFinalString = parsedEndDate.toString();
       this.enddateEmailString = enddate;
     }
-    this.projectstatusService.addProject(startDateFinalString, title, description, email, telephone, endDateFinalString, parseInt(this.notificationType)).subscribe((savedProjectId: String) => {
+    this.projectstatusService.addProject(startDateFinalString, title, description, projectLink, email, telephone, endDateFinalString, parseInt(this.notificationType), this.selectedClientLanguagecode, this.selectedClient.notificationmethod).subscribe((savedProjectId: String) => {
       if (savedProjectId) {
         this.saveProjectStages(savedProjectId);
-        
+
         if (parseInt(this.notificationType) > 0) {
-          this.sendProjectStartedNotification(title, email, telephone, savedProjectId, this.enddateEmailString);
+          this.sendProjectStartedNotification(title, email, telephone, this.selectedClientLanguagecode, savedProjectId, projectLink, this.enddateEmailString, this.selectedClient.notificationmethod);
         }
       }
     }, (err) => {
@@ -156,30 +162,63 @@ export class AdminCreateComponent implements OnInit {
   }
 
   /**
- * Send an email to the customer email address. Tells the customer that the project started and provides the status link and project end date (if set). 
- */
-  sendProjectStartedNotification(projectTitle, clientEmail, clientTelephoneNumber, projectId, projectEndDate) {
+   * Send an email to the customer email address. Tells the customer that the project started and provides the status link and project end date (if set). 
+   * @param projectTitle 
+   * @param clientEmail 
+   * @param clientTelephoneNumber 
+   * @param clientLanguagecode 
+   * @param projectId 
+   * @param projectLink 
+   * @param projectEndDate 
+   * @param notificationMethod 
+   */
+  sendProjectStartedNotification(projectTitle, clientEmail, clientTelephoneNumber, clientLanguagecode, projectId, projectLink, projectEndDate, notificationMethod) {
     this.projectstatusService.getAuthenticatedAdminAccount().subscribe(adminaccount => {
-      let emailSubject = EmailtTextTemplateTexts.projectStartedSubject + projectTitle;
+      let emailSubject = this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedSubject").value + projectTitle;
       let emailText;
       let smsText;
-      let projectStatusLink = EmailtTextTemplateTexts.appWebsiteURL + clientEmail + "/" + projectId;
+      let projectStatusLink = this.templateTextLanguages.get(clientLanguagecode + "emailAppWebsiteURL").value + clientEmail + "/" + projectId;
+      let projectLinkInfoEmail = (projectLink === "") ? "" : this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectlink").value
+      "<br><br>" + "<a href=\"" + projectLink + "\">" + projectLink + "</a>";
+      let projectLinkInfoSms = (projectLink === "") ? "" : "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectlink").value + projectLink;
 
       if (projectEndDate !== "") {
-        emailText = EmailtTextTemplateTexts.projectStartedTextGreeting + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextProjectEnd + "<br>" + projectEndDate + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
-        smsText = SmsTextTemplateTexts.projectStartedTextGreeting + "\n" + projectStatusLink + SmsTextTemplateTexts.projectStartedTextProjectEnd + "\n" + projectEndDate + ".\n" + EmailtTextTemplateTexts.projectStartedTextFooter + "\n" + adminaccount['name'];
+        emailText = this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextGreeting").value + "<br><br>" + projectLinkInfoEmail
+          + "<br><br> " + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectstatuslink").value
+          + " " + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>"
+          + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectEnd").value + "<br>"
+          + projectEndDate + "<br><br>" + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextFooter").value
+          + "<br>" + adminaccount['name'];
+
+        smsText = this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextGreeting").value +
+          "\n" + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectstatuslink").value + projectLinkInfoSms + "\n"
+          + projectStatusLink + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextProjectEnd").value
+          + "\n" + projectEndDate + "\n" + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextFooter").value
+          + "\n" + adminaccount['name'];
       } else {
-        emailText = EmailtTextTemplateTexts.projectStartedTextGreeting + "<br><br>" + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>" + EmailtTextTemplateTexts.projectStartedTextFooter + "<br>" + adminaccount['name'];
-        smsText = SmsTextTemplateTexts.projectStartedTextGreeting + "\n" + projectStatusLink + "\n" + SmsTextTemplateTexts.projectStartedTextFooter + "\n" + adminaccount['name'];
+        emailText = this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextGreeting").value + "<br><br>" + projectLinkInfoEmail
+          + "<br><br>" + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectstatuslink").value
+          + " " + "<a href=\"" + projectStatusLink + "\">" + projectStatusLink + "</a>" + "<br><br>"
+          + this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextFooter").value
+          + "<br>" + adminaccount['name'];
+
+        smsText = this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextGreeting").value +
+          this.templateTextLanguages.get(clientLanguagecode + "emailProjectStartedTextProjectstatuslink").value + projectLinkInfoSms + "\n"
+          + projectStatusLink + this.templateTextLanguages.get(clientLanguagecode + "smsProjectStartedTextFooter").value
+          + "\n" + adminaccount['name'];
       }
 
-      if (clientTelephoneNumber === "") {
+      if (notificationMethod === "email" && clientTelephoneNumber === "") {
         this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
           console.log("Email notification to customer sent");
         });
-      } else {
+      } else if (notificationMethod === "sms" && clientTelephoneNumber !== "") {
         this.projectstatusService.sendSMSNotificationClient(clientTelephoneNumber, smsText).subscribe(() => {
           console.log("SMS notification to customer sent");
+        });
+      } else {
+        this.projectstatusService.sendEmailNotificationClient(clientEmail, emailSubject, emailText, adminaccount['name'], adminaccount['email']).subscribe(() => {
+          console.log("Email notification to customer sent");
         });
       }
     });
@@ -190,9 +229,9 @@ export class AdminCreateComponent implements OnInit {
    * @param selectedValue 
    */
   setClientDetails(selectedValue) {
-    console.log("changed " + selectedValue.email);
     this.createForm.get("email").setValue(selectedValue.email);
     this.createForm.get("telephone").setValue(selectedValue.telephone);
+    this.selectedClientLanguagecode = selectedValue.languagecode;
   }
 
 }

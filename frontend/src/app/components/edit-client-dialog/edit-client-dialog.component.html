@@ -8,13 +8,31 @@
             <input matInput placeholder="{{clientEmailPlaceholder}}" formControlName="clientEmail" #clientEmail>
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="{{clientTelephonePlaceholder}}" formControlName="clientTelephone" #clientTelephone>
+            <input matInput placeholder="{{clientTelephonePlaceholder}}" formControlName="clientTelephone"
+                #clientTelephone>
         </mat-form-field>
+        <mat-form-field class="new-form-field">
+            <mat-label><span i18n>{{data.selectedlanguage.name}}</span></mat-label>
+            <mat-select (selectionChange)="changeClientLanguage($event.value)">
+                <mat-option *ngFor="let language of languages" [value]="language.code">{{language.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="new-form-field">
+            <span i18n>Notification Method: </span>
+            <mat-radio-group aria-label="Select a notification method" (change)="changeNotificationMethod($event.value)">
+                <mat-radio-button value="email" class="notification-radio-first" [checked]="this.data.notificationmethod==='email'"><span i18n>Email</span>
+                </mat-radio-button>
+                <mat-radio-button value="sms" class="notification-radio-other" [checked]="this.data.notificationmethod==='sms'"><span i18n>SMS</span>
+                </mat-radio-button>
+            </mat-radio-group>
+        </div>
+
         <br><br>
         <button mat-raised-button type="submit"
             (click)="updateClient(clientName.value, clientEmail.value, clientTelephone.value)" color="green"
             class="button-submit-client"><span i18n>Save</span></button>
-        <button mat-raised-button color="accent" (click)="onCancelEdit()" class="button-cancel-client"><span i18n>Cancel</span></button>
+        <button mat-raised-button color="accent" (click)="onCancelEdit()" class="button-cancel-client"><span
+                i18n>Cancel</span></button>
     </form>
 
 </div>

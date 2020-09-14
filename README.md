@@ -3,6 +3,9 @@
 Track your project status and send notifications about completed project stages or projects to your client. 
 Your clients can check the status of a project by entering their email address and project id. 
 
+
+![Animation of Web Application Project Status](https://raw.githubusercontent.com/a-dridi/Project-Status/master/screenshot-animation.gif)
+
 ![Screenshot of Web Application Project Status](https://raw.githubusercontent.com/a-dridi/Project-Status/master/screenshot.PNG)
 
 The application needs Angular, Express JS, NodeJS and Mongo Database. All needed dependencies are saved in the package.json in the frontend and backend folders. 
